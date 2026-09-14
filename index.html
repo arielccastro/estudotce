@@ -1,1047 +1,1468 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TCE-RJ 2027 - Cronograma de Estudos</title>
-<style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: 'Segoe UI', Tahoma, sans-serif;
-    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-    color: #333;
-    min-height: 100vh;
-    padding: 20px;
-  }
-  .container { max-width: 1200px; margin: 0 auto; }
-  header {
-    background: white;
-    border-radius: 12px;
-    padding: 20px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-    margin-bottom: 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 10px;
-  }
-  header h1 { color: #1e3c72; font-size: 24px; }
-  .progress-bar {
-    width: 100%;
-    height: 10px;
-    background: #eee;
-    border-radius: 5px;
-    overflow: hidden;
-    margin-top: 10px;
-  }
-  .progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, #11998e, #38ef7d);
-    transition: width 0.3s;
-  }
-  .tabs {
-    display: flex;
-    gap: 5px;
-    margin-bottom: 20px;
-    flex-wrap: wrap;
-  }
-  .tab {
-    background: rgba(255,255,255,0.8);
-    padding: 10px 18px;
-    border-radius: 8px 8px 0 0;
-    cursor: pointer;
-    font-weight: 600;
-    transition: all 0.3s;
-    border: none;
-    font-size: 14px;
-  }
-  .tab.active { background: white; color: #1e3c72; }
-  .tab:hover { background: white; }
-  .content {
-    background: white;
-    border-radius: 12px;
-    padding: 25px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-  }
-  .nav-day {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    margin-bottom: 25px;
-    flex-wrap: wrap;
-    background: #f4f7fa;
-    padding: 15px;
-    border-radius: 10px;
-  }
-  .nav-day button {
-    background: #1e3c72;
-    color: white;
-    border: none;
-    padding: 10px 18px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: background 0.3s;
-  }
-  .nav-day button:hover { background: #2a5298; }
-  .nav-day button:disabled { background: #ccc; cursor: not-allowed; }
-  .nav-day .day-info {
-    flex: 1;
-    text-align: center;
-    font-size: 20px;
-    font-weight: bold;
-    color: #1e3c72;
-  }
-  .nav-day input {
-    width: 80px;
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    text-align: center;
-    font-size: 14px;
-  }
-  .day-header {
-    border-left: 5px solid;
-    padding: 10px 15px;
-    border-radius: 6px;
-    margin-bottom: 20px;
-  }
-  .day-header h2 { font-size: 22px; margin-bottom: 5px; }
-  .day-header .topic { font-size: 15px; color: #555; }
-  .axes {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 15px;
-    margin-bottom: 25px;
-  }
-  .axis {
-    border: 2px solid #e0e6ed;
-    border-radius: 10px;
-    padding: 18px;
-    transition: all 0.3s;
-  }
-  .axis:hover { border-color: #1e3c72; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
-  .axis h3 {
-    font-size: 16px;
-    margin-bottom: 10px;
-    color: #1e3c72;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .axis-icon {
-    width: 32px; height: 32px;
-    border-radius: 50%;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-weight: bold;
-  }
-  .pdf-icon { background: #e74c3c; }
-  .quest-icon { background: #f39c12; }
-  .anki-icon { background: #3498db; }
-  .error-icon { background: #9b59b6; }
-  .axis p { font-size: 13px; color: #666; line-height: 1.5; }
-  .axis input[type="checkbox"] { margin-right: 5px; transform: scale(1.2); }
-  .stats-panel {
-    background: #f8fafc;
-    border: 2px solid #e0e6ed;
-    border-radius: 10px;
-    padding: 20px;
-    margin-top: 15px;
-  }
-  .stats-panel h3 { color: #1e3c72; margin-bottom: 15px; }
-  .stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-    gap: 12px;
-  }
-  .stat-box {
-    background: white;
-    padding: 12px;
-    border-radius: 8px;
-    text-align: center;
-    border: 1px solid #e0e6ed;
-  }
-  .stat-box .num { font-size: 24px; font-weight: bold; color: #1e3c72; }
-  .stat-box .lbl { font-size: 12px; color: #666; }
-  .form-row {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 10px;
-    margin-bottom: 10px;
-  }
-  .form-row label { font-size: 13px; color: #555; display: block; margin-bottom: 4px; }
-  .form-row input, .form-row textarea {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    font-size: 14px;
-  }
-  .btn-save {
-    background: #11998e;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 14px;
-    margin-top: 10px;
-  }
-  .btn-save:hover { background: #0f8577; }
-  .btn-reset {
-    background: #e74c3c;
-    color: white;
-    border: none;
-    padding: 8px 15px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 12px;
-  }
-  table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-  th, td { padding: 10px; text-align: left; border-bottom: 1px solid #e0e6ed; font-size: 14px; }
-  th { background: #f4f7fa; color: #1e3c72; font-weight: 600; }
-  tr:hover { background: #f8fafc; }
-  .bar {
-    background: #e0e6ed;
-    height: 8px;
-    border-radius: 4px;
-    overflow: hidden;
-  }
-  .bar-fill {
-    height: 100%;
-    background: linear-gradient(90deg, #11998e, #38ef7d);
-  }
-  .badge {
-    display: inline-block;
-    padding: 2px 8px;
-    border-radius: 12px;
-    font-size: 11px;
-    font-weight: 600;
-    color: white;
-  }
-  .badge-rev { background: #e67e22; }
-  .badge-bas { background: #3498db; }
-  .badge-esp { background: #e74c3c; }
-  .error-entry {
-    background: #fdf2f8;
-    border-left: 4px solid #9b59b6;
-    padding: 10px;
-    margin: 8px 0;
-    border-radius: 4px;
-    font-size: 13px;
-  }
-  .error-entry strong { color: #9b59b6; }
-  .info-msg {
-    background: #fff9e6;
-    border-left: 4px solid #f39c12;
-    padding: 12px;
-    border-radius: 6px;
-    margin: 10px 0;
-    font-size: 14px;
-  }
-  @media (max-width: 600px) {
-    header { flex-direction: column; text-align: center; }
-    .day-header h2 { font-size: 18px; }
-  }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TCE-RJ 2027 - Cronograma de Estudos</title>
+
+  <style>
+    :root {
+      --bg: #f4f6f8;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --primary: #1d4ed8;
+      --primary-dark: #1e40af;
+      --border: #d1d5db;
+      --success: #15803d;
+      --danger: #b91c1c;
+      --warning: #b45309;
+      --soft-blue: #eff6ff;
+      --soft-green: #ecfdf5;
+      --soft-red: #fef2f2;
+      --soft-yellow: #fffbeb;
+      --shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+      --radius: 14px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    header {
+      background: linear-gradient(135deg, #1d4ed8, #0f172a);
+      color: #ffffff;
+      padding: 28px 20px;
+      text-align: center;
+    }
+
+    header h1 {
+      margin: 0 0 8px;
+      font-size: 1.9rem;
+    }
+
+    header p {
+      margin: 0;
+      color: #dbeafe;
+    }
+
+    main {
+      max-width: 1180px;
+      margin: 24px auto;
+      padding: 0 16px 40px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    .top-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 0;
+    }
+
+    button,
+    .file-label {
+      border: 0;
+      background: var(--primary);
+      color: #ffffff;
+      padding: 10px 14px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 700;
+      transition: 0.2s;
+      font-size: 0.95rem;
+      display: inline-block;
+      text-align: center;
+    }
+
+    button:hover,
+    .file-label:hover {
+      background: var(--primary-dark);
+    }
+
+    button.secondary {
+      background: #475569;
+    }
+
+    button.secondary:hover {
+      background: #334155;
+    }
+
+    button.danger {
+      background: var(--danger);
+    }
+
+    button.danger:hover {
+      background: #991b1b;
+    }
+
+    button.success {
+      background: var(--success);
+    }
+
+    button.success:hover {
+      background: #166534;
+    }
+
+    button.active {
+      background: #0f172a;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px;
+      font-size: 1rem;
+      background: #ffffff;
+      color: var(--text);
+    }
+
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    label {
+      display: block;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .grid {
+      display: grid;
+      gap: 16px;
+    }
+
+    .grid-2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .grid-3 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .grid-4 {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .stat-card {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px;
+      background: #ffffff;
+    }
+
+    .stat-card strong {
+      display: block;
+      font-size: 1.8rem;
+      margin-top: 4px;
+    }
+
+    .stat-card span {
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .stat-card.blue {
+      background: var(--soft-blue);
+    }
+
+    .stat-card.green {
+      background: var(--soft-green);
+    }
+
+    .stat-card.red {
+      background: var(--soft-red);
+    }
+
+    .stat-card.yellow {
+      background: var(--soft-yellow);
+    }
+
+    .progress-wrap {
+      background: #e5e7eb;
+      border-radius: 999px;
+      height: 12px;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      background: var(--primary);
+      height: 100%;
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    .mini-progress {
+      background: #e5e7eb;
+      border-radius: 999px;
+      height: 8px;
+      overflow: hidden;
+      margin-bottom: 5px;
+    }
+
+    .mini-progress > div {
+      height: 100%;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 14px;
+      background: #ffffff;
+    }
+
+    th,
+    td {
+      padding: 12px;
+      border-bottom: 1px solid var(--border);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: #f8fafc;
+      font-size: 0.9rem;
+      color: #334155;
+    }
+
+    tr:hover td {
+      background: #f9fafb;
+    }
+
+    tr.current-day td {
+      background: #eff6ff;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 9px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      background: #e0e7ff;
+      color: #3730a3;
+      margin-right: 6px;
+      margin-bottom: 4px;
+    }
+
+    .badge.done {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .badge.review {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .badge.error {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .muted {
+      color: var(--muted);
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .day-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: end;
+      margin-bottom: 16px;
+    }
+
+    .day-controls > div {
+      min-width: 140px;
+    }
+
+    .tasks {
+      display: grid;
+      gap: 10px;
+      margin: 16px 0;
+    }
+
+    .task {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      padding: 12px;
+      border-radius: 10px;
+      font-weight: 400;
+      margin-bottom: 0;
+    }
+
+    .task input {
+      width: auto;
+    }
+
+    .error-item {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 12px;
+      background: #ffffff;
+    }
+
+    .error-item h4 {
+      margin: 0 0 8px;
+    }
+
+    .backup-area {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+
+    #backupInput {
+      display: none;
+    }
+
+    .alert {
+      padding: 10px 12px;
+      border-radius: 10px;
+      margin-bottom: 10px;
+      border: 1px solid transparent;
+    }
+
+    .alert-warning {
+      background: #fffbeb;
+      border-color: #fcd34d;
+      color: #92400e;
+    }
+
+    .alert-info {
+      background: #eff6ff;
+      border-color: #bfdbfe;
+      color: #1e40af;
+    }
+
+    .alert-success {
+      background: #ecfdf5;
+      border-color: #bbf7d0;
+      color: #166534;
+    }
+
+    .status-select {
+      min-width: 160px;
+    }
+
+    .topic-cell small {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+    }
+
+    .stats-note {
+      margin-top: 14px;
+      padding: 12px;
+      border-radius: 10px;
+      background: #f8fafc;
+      border: 1px solid var(--border);
+    }
+
+    @media (max-width: 800px) {
+      .grid-2,
+      .grid-3,
+      .grid-4 {
+        grid-template-columns: 1fr;
+      }
+
+      header h1 {
+        font-size: 1.45rem;
+      }
+
+      button,
+      .file-label {
+        width: 100%;
+      }
+
+      .tabs button {
+        width: 100%;
+      }
+    }
+  </style>
 </head>
+
 <body>
-<div class="container">
   <header>
-    <div>
-      <h1>🎯 TCE-RJ 2027 - Auditor de Controle Externo</h1>
-      <p style="color:#666; font-size:13px; margin-top:4px;">3h/dia | 30 questões/dia | 360 dias | Revisão a cada 6 dias</p>
-      <div class="progress-bar" style="margin-top:10px;">
-        <div class="progress-fill" id="progressFill"></div>
-      </div>
-      <p style="font-size:12px; color:#888; margin-top:4px;" id="progressText">Progresso geral</p>
-    </div>
+    <h1>TCE-RJ 2027 - Auditor de Controle Externo</h1>
+    <p>3h por dia | 30 questões por dia | 360 dias | Revisão a cada 6 dias</p>
   </header>
 
-  <div class="tabs">
-    <button class="tab active" onclick="showTab('agenda', event)">📅 Agenda do Dia</button>
-    <button class="tab" onclick="showTab('stats', event)">📊 Estatísticas</button>
-    <button class="tab" onclick="showTab('errors', event)">📕 Caderno de Erros</button>
-    <button class="tab" onclick="showTab('schedule', event)">🗂️ Cronograma Completo</button>
-  </div>
-
-  <div class="content">
-    <!-- AGENDA -->
-    <div id="agenda" class="tab-content">
-      <div class="nav-day">
-        <button onclick="changeDay(-1)">◀ Dia Anterior</button>
-        <div class="day-info" id="dayDisplay">Dia 1</div>
-        <button onclick="changeDay(1)">Próximo Dia ▶</button>
-        <input type="number" id="jumpDay" min="1" max="360" placeholder="Ir para...">
-        <button onclick="jumpToDay()">Ir</button>
-        <button onclick="markToday()" style="background:#11998e;">Marcar como hoje</button>
-      </div>
-
-      <div id="dayContent"></div>
-    </div>
-
-    <!-- ESTATÍSTICAS -->
-    <div id="stats" class="tab-content" style="display:none;">
-      <h2 style="color:#1e3c72; margin-bottom:15px;">📊 Estatísticas Gerais por Matéria</h2>
-      <div class="stats-grid" id="globalStats"></div>
-      <h3 style="color:#1e3c72; margin-top:25px; margin-bottom:10px;">Detalhamento por Matéria</h3>
-      <table id="statsTable">
-        <thead>
-          <tr><th>Matéria</th><th>Questões</th><th>Acertos</th><th>Erros</th><th>% Acerto</th><th>Evolução</th></tr>
-        </thead>
-        <tbody id="statsTableBody"></tbody>
-      </table>
-      <div style="margin-top:20px;">
-        <button class="btn-reset" onclick="resetStats()">🗑️ Resetar todas as estatísticas</button>
-      </div>
-    </div>
-
-    <!-- CADERNO DE ERROS -->
-    <div id="errors" class="tab-content" style="display:none;">
-      <h2 style="color:#1e3c72; margin-bottom:15px;">📕 Caderno de Erros</h2>
-      <div class="info-msg">
-        Registre os conceitos errados, macetes e pontos fracos. Revise sempre nos dias de revisão (a cada 6 dias).
-      </div>
-      <div class="form-row" style="margin-top:15px;">
+  <main>
+    <section class="card">
+      <div class="top-actions">
         <div>
-          <label>Matéria</label>
-          <select id="errSubject"></select>
-        </div>
-        <div style="grid-column: span 2;">
-          <label>Tópico / Observação</label>
-          <input type="text" id="errTopic" placeholder="Ex: Crase antes de verbo no infinitivo">
-        </div>
-        <div style="grid-column: span 3;">
-          <label>Explicação / O que aprendi</label>
-          <textarea id="errNote" rows="3" placeholder="Escreva com suas palavras..."></textarea>
-        </div>
-      </div>
-      <button class="btn-save" onclick="addError()">+ Adicionar ao caderno</button>
-      <div id="errorsList" style="margin-top:20px;"></div>
-    </div>
-
-    <!-- CRONOGRAMA COMPLETO -->
-    <div id="schedule" class="tab-content" style="display:none;">
-      <h2 style="color:#1e3c72; margin-bottom:15px;">🗂️ Cronograma de 360 Dias</h2>
-      <div class="info-msg">
-        <strong>Estrutura:</strong> A cada 6 dias → 5 dias de matéria nova + 1 dia de revisão.<br>
-        <strong>Eixos diários (3h total):</strong> PDF (1h30) · Questões (45min) · Anki (30min) · Caderno de Erros (15min)
-      </div>
-      <input type="text" id="searchSchedule" placeholder="🔍 Buscar matéria ou tópico..." style="width:100%; padding:10px; border:1px solid #ccc; border-radius:6px; margin:15px 0;">
-      <table id="scheduleTable">
-        <thead>
-          <tr><th>Dia</th><th>Tipo</th><th>Matéria</th><th>Tópico</th><th>Status</th></tr>
-        </thead>
-        <tbody id="scheduleBody"></tbody>
-      </table>
-    </div>
-  </div>
-</div>
-
-<script>
-// =================== CRONOGRAMA 360 DIAS ===================
-const SCHEDULE = [
-  // Ciclo 1 - Controle Externo
-  {d:1, type:'estudo', subject:'Controle Externo', topic:'Controle da Administração Pública: conceito, abrangência e espécies', color:'#c0392b', badge:'esp'},
-  {d:2, type:'estudo', subject:'Controle Externo', topic:'Controle interno x Controle externo - diferenças', color:'#c0392b', badge:'esp'},
-  {d:3, type:'estudo', subject:'Controle Externo', topic:'Controle externo no Brasil - evolução histórica', color:'#c0392b', badge:'esp'},
-  {d:4, type:'estudo', subject:'Direito Constitucional', topic:'Aplicabilidade das normas constitucionais', color:'#2980b9', badge:'bas'},
-  {d:5, type:'estudo', subject:'Direito Constitucional', topic:'Princípios fundamentais da CF/88', color:'#2980b9', badge:'bas'},
-  {d:6, type:'revisao', subject:'Revisão', topic:'Revisão dos Dias 1-5 (Controle Externo + Dir. Const.)', color:'#e67e22', badge:'rev'},
-
-  {d:7, type:'estudo', subject:'Controle Externo', topic:'Poder Legislativo e Tribunais de Contas', color:'#c0392b', badge:'esp'},
-  {d:8, type:'estudo', subject:'Controle Externo', topic:'Fiscalização contábil, financeira e orçamentária', color:'#c0392b', badge:'esp'},
-  {d:9, type:'estudo', subject:'Controle Externo', topic:'Fiscalização operacional e patrimonial', color:'#c0392b', badge:'esp'},
-  {d:10, type:'estudo', subject:'Direito Constitucional', topic:'Direitos e garantias fundamentais I', color:'#2980b9', badge:'bas'},
-  {d:11, type:'estudo', subject:'Direito Constitucional', topic:'Direitos e garantias fundamentais II', color:'#2980b9', badge:'bas'},
-  {d:12, type:'revisao', subject:'Revisão', topic:'Revisão dos Dias 7-11', color:'#e67e22', badge:'rev'},
-
-  {d:13, type:'estudo', subject:'Auditoria Governamental', topic:'Compliance: conceito, princípios e normas', color:'#16a085', badge:'esp'},
-  {d:14, type:'estudo', subject:'Auditoria Governamental', topic:'Auditoria de conformidade x operacional', color:'#16a085', badge:'esp'},
-  {d:15, type:'estudo', subject:'Auditoria Governamental', topic:'Instrumentos de fiscalização', color:'#16a085', badge:'esp'},
-  {d:16, type:'estudo', subject:'AFO', topic:'Orçamento público: conceito e técnicas', color:'#d35400', badge:'esp'},
-  {d:17, type:'estudo', subject:'AFO', topic:'Princípios orçamentários', color:'#d35400', badge:'esp'},
-  {d:18, type:'revisao', subject:'Revisão', topic:'Revisão dos Dias 13-17', color:'#e67e22', badge:'rev'},
-
-  {d:19, type:'estudo', subject:'AFO', topic:'Ciclo e processo orçamentário', color:'#d35400', badge:'esp'},
-  {d:20, type:'estudo', subject:'AFO', topic:'PPA, LDO e LOA', color:'#d35400', badge:'esp'},
-  {d:21, type:'estudo', subject:'Contabilidade Pública', topic:'Conceito, objeto e campo de aplicação', color:'#8e44ad', badge:'esp'},
-  {d:22, type:'estudo', subject:'Contabilidade Pública', topic:'Composição do Patrimônio Público', color:'#8e44ad', badge:'esp'},
-  {d:23, type:'estudo', subject:'Direito Administrativo', topic:'Estado, governo e administração pública', color:'#27ae60', badge:'bas'},
-  {d:24, type:'revisao', subject:'Revisão', topic:'Revisão dos Dias 19-23', color:'#e67e22', badge:'rev'},
-
-  {d:25, type:'estudo', subject:'Direito Administrativo', topic:'Ato administrativo: conceito e requisitos', color:'#27ae60', badge:'bas'},
-  {d:26, type:'estudo', subject:'Direito Administrativo', topic:'Atributos e espécies de atos', color:'#27ae60', badge:'bas'},
-  {d:27, type:'estudo', subject:'Administração Pública', topic:'Estado: conceito e evolução', color:'#3498db', badge:'bas'},
-  {d:28, type:'estudo', subject:'Administração Pública', topic:'Formas: patrimonialista, burocrática, gerencial', color:'#3498db', badge:'bas'},
-  {d:29, type:'estudo', subject:'Língua Portuguesa', topic:'Compreensão e interpretação de textos', color:'#34495e', badge:'bas'},
-  {d:30, type:'revisao', subject:'Revisão', topic:'Revisão dos Dias 25-29', color:'#e67e22', badge:'rev'},
-
-  {d:31, type:'estudo', subject:'Língua Portuguesa', topic:'Ortografia oficial e coesão textual', color:'#34495e', badge:'bas'},
-  {d:32, type:'estudo', subject:'Língua Portuguesa', topic:'Classes de palavras I', color:'#34495e', badge:'bas'},
-  {d:33, type:'estudo', subject:'Controle Externo', topic:'Natureza jurídica dos Tribunais de Contas', color:'#c0392b', badge:'esp'},
-  {d:34, type:'estudo', subject:'Controle Externo', topic:'Investidura, direitos e prerrogativas dos membros', color:'#c0392b', badge:'esp'},
-  {d:35, type:'estudo', subject:'Direito Constitucional', topic:'Direitos sociais', color:'#2980b9', badge:'bas'},
-  {d:36, type:'revisao', subject:'Revisão', topic:'Revisão dos Dias 31-35', color:'#e67e22', badge:'rev'},
-
-  {d:37, type:'estudo', subject:'Direito Constitucional', topic:'Nacionalidade e direitos políticos', color:'#2980b9', badge:'bas'},
-  {d:38, type:'estudo', subject:'Direito Constitucional', topic:'Organização político-administrativa', color:'#2980b9', badge:'bas'},
-  {d:39, type:'estudo', subject:'Controle Externo', topic:'Funções dos TCs e eficácia das decisões', color:'#c0392b', badge:'esp'},
-  {d:40, type:'estudo', subject:'Controle Externo', topic:'Revisão das decisões pelo Judiciário', color:'#c0392b', badge:'esp'},
-  {d:41, type:'estudo', subject:'Auditoria Governamental', topic:'Planejamento de auditoria', color:'#16a085', badge:'esp'},
-  {d:42, type:'revisao', subject:'Revisão', topic:'Revisão dos Dias 37-41', color:'#e67e22', badge:'rev'},
-
-  {d:43, type:'estudo', subject:'Auditoria Governamental', topic:'Gestão de riscos no setor público', color:'#16a085', badge:'esp'},
-  {d:44, type:'estudo', subject:'Auditoria Governamental', topic:'Plano de auditoria baseado no risco', color:'#16a085', badge:'esp'},
-  {d:45, type:'estudo', subject:'AFO', topic:'Classificações orçamentárias', color:'#d35400', badge:'esp'},
-  {d:46, type:'estudo', subject:'AFO', topic:'Estrutura programática', color:'#d35400', badge:'esp'},
-  {d:47, type:'estudo', subject:'Contabilidade Pública', topic:'Ativo, Passivo e Saldo Patrimonial', color:'#8e44ad', badge:'esp'},
-  {d:48, type:'revisao', subject:'Revisão', topic:'Revisão dos Dias 43-47', color:'#e67e22', badge:'rev'},
-
-  {d:49, type:'estudo', subject:'Contabilidade Pública', topic:'Receita pública: definições e estágios', color:'#8e44ad', badge:'esp'},
-  {d:50, type:'estudo', subject:'Contabilidade Pública', topic:'Despesa pública: definições e estágios', color:'#8e44ad', badge:'esp'},
-  {d:51, type:'estudo', subject:'Direito Administrativo', topic:'Extinção dos atos administrativos', color:'#27ae60', badge:'bas'},
-  {d:52, type:'estudo', subject:'Direito Administrativo', topic:'Decadência administrativa', color:'#27ae60', badge:'bas'},
-  {d:53, type:'estudo', subject:'Administração Pública', topic:'Evolução da Adm. Pública no Brasil', color:'#3498db', badge:'bas'},
-  {d:54, type:'revisao', subject:'Revisão', topic:'Revisão dos Dias 49-53', color:'#e67e22', badge:'rev'},
-
-  {d:55, type:'estudo', subject:'Administração Pública', topic:'Reformas administrativas', color:'#3498db', badge:'bas'},
-  {d:56, type:'estudo', subject:'Administração Pública', topic:'Sistemas de governo', color:'#3498db', badge:'bas'},
-  {d:57, type:'estudo', subject:'Língua Portuguesa', topic:'Classes de palavras II', color:'#34495e', badge:'bas'},
-  {d:58, type:'estudo', subject:'Língua Portuguesa', topic:'Classes de palavras III', color:'#34495e', badge:'bas'},
-  {d:59, type:'estudo', subject:'Análise de Dados', topic:'Dado, informação, conhecimento e inteligência', color:'#9b59b6', badge:'esp'},
-  {d:60, type:'revisao', subject:'Revisão', topic:'Revisão dos Dias 55-59', color:'#e67e22', badge:'rev'},
-
-  // Ciclo 11
-  {d:61, type:'estudo', subject:'Análise de Dados', topic:'Dados estruturados, não estruturados e abertos', color:'#9b59b6', badge:'esp'},
-  {d:62, type:'estudo', subject:'Análise de Dados', topic:'Coleta, tratamento e armazenamento de dados', color:'#9b59b6', badge:'esp'},
-  {d:63, type:'estudo', subject:'Controle Externo', topic:'Competências do TCE-RJ', color:'#c0392b', badge:'esp'},
-  {d:64, type:'estudo', subject:'Controle Externo', topic:'Competência normativa e revisão dos próprios atos', color:'#c0392b', badge:'esp'},
-  {d:65, type:'estudo', subject:'Direito Constitucional', topic:'Poder Executivo', color:'#2980b9', badge:'bas'},
-  {d:66, type:'revisao', subject:'Revisão', topic:'Revisão dos Dias 61-65', color:'#e67e22', badge:'rev'},
-
-  {d:67, type:'estudo', subject:'Direito Constitucional', topic:'Poder Legislativo I', color:'#2980b9', badge:'bas'},
-  {d:68, type:'estudo', subject:'Direito Constitucional', topic:'Poder Legislativo II e Processo Legislativo', color:'#2980b9', badge:'bas'},
-  {d:69, type:'estudo', subject:'Controle Externo', topic:'Fiscalização do TCE-RJ: iniciativa própria', color:'#c0392b', badge:'esp'},
-  {d:70, type:'estudo', subject:'Controle Externo', topic:'Denúncia e Representação', color:'#c0392b', badge:'esp'},
-  {d:71, type:'estudo', subject:'Auditoria Governamental', topic:'Materialidade, risco e relevância', color:'#16a085', badge:'esp'},
-  {d:72, type:'revisao', subject:'Revisão', topic:'Revisão dos Dias 67-71', color:'#e67e22', badge:'rev'},
-
-  {d:73, type:'estudo', subject:'Auditoria Governamental', topic:'Risco inerente, de controle e de detecção', color:'#16a085', badge:'esp'},
-  {d:74, type:'estudo', subject:'Auditoria Governamental', topic:'Matriz de Planejamento e roteiros', color:'#16a085', badge:'esp'},
-  {d:75, type:'estudo', subject:'AFO', topic:'Créditos ordinários e adicionais', color:'#d35400', badge:'esp'},
-  {d:76, type:'estudo', subject:'AFO', topic:'Programação e execução orçamentária', color:'#d35400', badge:'esp'},
-  {d:77, type:'estudo', subject:'Contabilidade Pública', topic:'Receitas/despesas orçamentárias e extraorçamentárias', color:'#8e44ad', badge:'esp'},
-  {d:78, type:'revisao', subject:'Revisão', topic:'Revisão dos Dias 73-77', color:'#e67e22', badge:'rev'},
-
-  {d:79, type:'estudo', subject:'Contabilidade Pública', topic:'Restos a pagar e Dívida Pública', color:'#8e44ad', badge:'esp'},
-  {d:80, type:'estudo', subject:'Contabilidade Pública', topic:'Despesas de exercícios anteriores', color:'#8e44ad', badge:'esp'},
-  {d:81, type:'estudo', subject:'Direito Administrativo', topic:'Agentes públicos: conceito e espécies', color:'#27ae60', badge:'bas'},
-  {d:82, type:'estudo', subject:'Direito Administrativo', topic:'Cargo, emprego, função pública', color:'#27ae60', badge:'bas'},
-  {d:83, type:'estudo', subject:'Administração Pública', topic:'Governança no setor público', color:'#3498db', badge:'bas'},
-  {d:84, type:'revisao', subject:'Revisão', topic:'Revisão dos Dias 79-83', color:'#e67e22', badge:'rev'},
-
-  {d:85, type:'estudo', subject:'Administração Pública', topic:'Transparência e accountability', color:'#3498db', badge:'bas'},
-  {d:86, type:'estudo', subject:'Administração Pública', topic:'Princípios da governança pública', color:'#3498db', badge:'bas'},
-  {d:87, type:'estudo', subject:'Língua Portuguesa', topic:'Coordenação e subordinação de orações', color:'#34495e', badge:'bas'},
-  {d:88, type:'estudo', subject:'Língua Portuguesa', topic:'Pontuação', color:'#34495e', badge:'bas'},
-  {d:89, type:'estudo', subject:'Análise de Dados', topic:'Banco de dados relacionais: conceitos', color:'#9b59b6', badge:'esp'},
-  {d:90, type:'revisao', subject:'Revisão', topic:'Revisão dos Dias 85-89', color:'#e67e22', badge:'rev'},
-
-  {d:91, type:'estudo', subject:'Análise de Dados', topic:'Metadados, tabelas, views e índices', color:'#9b59b6', badge:'esp'},
-  {d:92, type:'estudo', subject:'Análise de Dados', topic:'Chaves e relacionamentos', color:'#9b59b6', badge:'esp'},
-  {d:93, type:'estudo', subject:'Controle Externo', topic:'Apreciação da legalidade - admissão de pessoal', color:'#c0392b', badge:'esp'},
-  {d:94, type:'estudo', subject:'Controle Externo', topic:'Aposentadorias, reformas e pensões', color:'#c0392b', badge:'esp'},
-  {d:95, type:'estudo', subject:'Direito Constitucional', topic:'Fiscalização contábil, financeira e orçamentária', color:'#2980b9', badge:'bas'},
-  {d:96, type:'revisao', subject:'Revisão', topic:'Revisão dos Dias 91-95', color:'#e67e22', badge:'rev'},
-
-  {d:97, type:'estudo', subject:'Direito Constitucional', topic:'Comissões Parlamentares de Inquérito', color:'#2980b9', badge:'bas'},
-  {d:98, type:'estudo', subject:'Direito Constitucional', topic:'Poder Judiciário I', color:'#2980b9', badge:'bas'},
-  {d:99, type:'estudo', subject:'Controle Externo', topic:'Ministério Público de Contas: natureza e competência', color:'#c0392b', badge:'esp'},
-  {d:100, type:'estudo', subject:'Controle Externo', topic:'Funções institucionais do MPC', color:'#c0392b', badge:'esp'},
-  {d:101, type:'estudo', subject:'Auditoria Governamental', topic:'Papéis de trabalho', color:'#16a085', badge:'esp'},
-  {d:102, type:'revisao', subject:'Revisão', topic:'Revisão dos Dias 97-101', color:'#e67e22', badge:'rev'},
-
-  {d:103, type:'estudo', subject:'Auditoria Governamental', topic:'Testes de auditoria', color:'#16a085', badge:'esp'},
-  {d:104, type:'estudo', subject:'Auditoria Governamental', topic:'Amostragem estatística', color:'#16a085', badge:'esp'},
-  {d:105, type:'estudo', subject:'AFO', topic:'Descentralização orçamentária e financeira', color:'#d35400', badge:'esp'},
-  {d:106, type:'estudo', subject:'AFO', topic:'Acompanhamento e sistemas de informação', color:'#d35400', badge:'esp'},
-  {d:107, type:'estudo', subject:'Contabilidade Pública', topic:'Variações patrimoniais qualitativas', color:'#8e44ad', badge:'esp'},
-  {d:108, type:'revisao', subject:'Revisão', topic:'Revisão dos Dias 103-107', color:'#e67e22', badge:'rev'},
-
-  {d:109, type:'estudo', subject:'Contabilidade Pública', topic:'Variações patrimoniais quantitativas', color:'#8e44ad', badge:'esp'},
-  {d:110, type:'estudo', subject:'Contabilidade Pública', topic:'Resultado patrimonial', color:'#8e44ad', badge:'esp'},
-  {d:111, type:'estudo', subject:'Direito Administrativo', topic:'Provimento, vacância e estabilidade', color:'#27ae60', badge:'bas'},
-  {d:112, type:'estudo', subject:'Direito Administrativo', topic:'Remuneração e direitos', color:'#27ae60', badge:'bas'},
-  {d:113, type:'estudo', subject:'Administração Pública', topic:'Estado unitário e federativo', color:'#3498db', badge:'bas'},
-  {d:114, type:'revisao', subject:'Revisão', topic:'Revisão dos Dias 109-113', color:'#e67e22', badge:'rev'},
-
-  {d:115, type:'estudo', subject:'Administração Pública', topic:'Relações entre esferas de governo', color:'#3498db', badge:'bas'},
-  {d:116, type:'estudo', subject:'Administração Pública', topic:'Revisão geral - Administração Pública', color:'#3498db', badge:'bas'},
-  {d:117, type:'estudo', subject:'Língua Portuguesa', topic:'Concordância verbal e nominal', color:'#34495e', badge:'bas'},
-  {d:118, type:'estudo', subject:'Língua Portuguesa', topic:'Regência verbal e nominal', color:'#34495e', badge:'bas'},
-  {d:119, type:'estudo', subject:'Análise de Dados', topic:'Modelagem dimensional', color:'#9b59b6', badge:'esp'},
-  {d:120, type:'revisao', subject:'Revisão', topic:'Revisão dos Dias 115-119', color:'#e67e22', badge:'rev'},
-
-  // Ciclo 21
-  {d:121, type:'estudo', subject:'Análise de Dados', topic:'Mineração de dados: conceitos', color:'#9b59b6', badge:'esp'},
-  {d:122, type:'estudo', subject:'Análise de Dados', topic:'Modelo CRISP-DM', color:'#9b59b6', badge:'esp'},
-  {d:123, type:'estudo', subject:'Controle Externo', topic:'MPC-RJ: competência e organização', color:'#c0392b', badge:'esp'},
-  {d:124, type:'estudo', subject:'Controle Externo', topic:'Investidura e regime jurídico MPC-RJ', color:'#c0392b', badge:'esp'},
-  {d:125, type:'estudo', subject:'Direito Constitucional', topic:'Poder Judiciário II - CNJ', color:'#2980b9', badge:'bas'},
-  {d:126, type:'revisao', subject:'Revisão', topic:'Revisão dos Dias 121-125', color:'#e67e22', badge:'rev'},
-
-  {d:127, type:'estudo', subject:'Direito Constitucional', topic:'Funções essenciais à justiça', color:'#2980b9', badge:'bas'},
-  {d:128, type:'estudo', subject:'Direito Constitucional', topic:'Finanças públicas I', color:'#2980b9', badge:'bas'},
-  {d:129, type:'estudo', subject:'Controle Externo', topic:'Constituição Federal - controle externo', color:'#c0392b', badge:'esp'},
-  {d:130, type:'estudo', subject:'Controle Externo', topic:'Constituição Estadual RJ', color:'#c0392b', badge:'esp'},
-  {d:131, type:'estudo', subject:'Auditoria Governamental', topic:'Execução da auditoria: técnicas e procedimentos', color:'#16a085', badge:'esp'},
-  {d:132, type:'revisao', subject:'Revisão', topic:'Revisão dos Dias 127-131', color:'#e67e22', badge:'rev'},
-
-  {d:133, type:'estudo', subject:'Auditoria Governamental', topic:'Exame documental e inspeção física', color:'#16a085', badge:'esp'},
-  {d:134, type:'estudo', subject:'Auditoria Governamental', topic:'Conferência de cálculos e observação', color:'#16a085', badge:'esp'},
-  {d:135, type:'estudo', subject:'AFO', topic:'Alterações orçamentárias', color:'#d35400', badge:'esp'},
-  {d:136, type:'estudo', subject:'AFO', topic:'Receita pública: conceito e classificações', color:'#d35400', badge:'esp'},
-  {d:137, type:'estudo', subject:'Contabilidade Pública', topic:'Balanço Orçamentário', color:'#8e44ad', badge:'esp'},
-  {d:138, type:'revisao', subject:'Revisão', topic:'Revisão dos Dias 133-137', color:'#e67e22', badge:'rev'},
-
-  {d:139, type:'estudo', subject:'Contabilidade Pública', topic:'Balanço Financeiro', color:'#8e44ad', badge:'esp'},
-  {d:140, type:'estudo', subject:'Contabilidade Pública', topic:'Demonstração das Variações Patrimoniais', color:'#8e44ad', badge:'esp'},
-  {d:141, type:'estudo', subject:'Direito Administrativo', topic:'PAD - Processo Administrativo Disciplinar', color:'#27ae60', badge:'bas'},
-  {d:142, type:'estudo', subject:'Direito Administrativo', topic:'Poderes administrativos I', color:'#27ae60', badge:'bas'},
-  {d:143, type:'estudo', subject:'Língua Portuguesa', topic:'Crase', color:'#34495e', badge:'bas'},
-  {d:144, type:'revisao', subject:'Revisão', topic:'Revisão dos Dias 139-143', color:'#e67e22', badge:'rev'},
-
-  {d:145, type:'estudo', subject:'Língua Portuguesa', topic:'Colocação pronominal', color:'#34495e', badge:'bas'},
-  {d:146, type:'estudo', subject:'Língua Portuguesa', topic:'Reescrita de frases I', color:'#34495e', badge:'bas'},
-  {d:147, type:'estudo', subject:'Análise de Dados', topic:'Pré-processamento de dados', color:'#9b59b6', badge:'esp'},
-  {d:148, type:'estudo', subject:'Análise de Dados', topic:'Técnicas de mineração: classificação', color:'#9b59b6', badge:'esp'},
-  {d:149, type:'estudo', subject:'Licitações e Contratos', topic:'Lei 8.666/1993: disposições preliminares', color:'#f39c12', badge:'esp'},
-  {d:150, type:'revisao', subject:'Revisão', topic:'Revisão dos Dias 145-149', color:'#e67e22', badge:'rev'},
-
-  {d:151, type:'estudo', subject:'Licitações e Contratos', topic:'Modalidades de licitação', color:'#f39c12', badge:'esp'},
-  {d:152, type:'estudo', subject:'Licitações e Contratos', topic:'Tipos de licitação', color:'#f39c12', badge:'esp'},
-  {d:153, type:'estudo', subject:'Controle Externo', topic:'Lei Orgânica do TCE-RJ I', color:'#c0392b', badge:'esp'},
-  {d:154, type:'estudo', subject:'Controle Externo', topic:'Lei Orgânica do TCE-RJ II', color:'#c0392b', badge:'esp'},
-  {d:155, type:'estudo', subject:'Direito Constitucional', topic:'Finanças públicas II - Orçamentos', color:'#2980b9', badge:'bas'},
-  {d:156, type:'revisao', subject:'Revisão', topic:'Revisão dos Dias 151-155', color:'#e67e22', badge:'rev'},
-
-  {d:157, type:'estudo', subject:'Direito Constitucional', topic:'Constituição do Estado do Rio de Janeiro', color:'#2980b9', badge:'bas'},
-  {d:158, type:'estudo', subject:'Direito Constitucional', topic:'Revisão geral Dir. Constitucional', color:'#2980b9', badge:'bas'},
-  {d:159, type:'estudo', subject:'Controle Externo', topic:'Lei Estadual 4.787/2006 I', color:'#c0392b', badge:'esp'},
-  {d:160, type:'estudo', subject:'Controle Externo', topic:'Lei Estadual 4.787/2006 II', color:'#c0392b', badge:'esp'},
-  {d:161, type:'estudo', subject:'Auditoria Governamental', topic:'Entrevista e circularização', color:'#16a085', badge:'esp'},
-  {d:162, type:'revisao', subject:'Revisão', topic:'Revisão dos Dias 157-161', color:'#e67e22', badge:'rev'},
-
-  {d:163, type:'estudo', subject:'Auditoria Governamental', topic:'Conciliações e análise de contas', color:'#16a085', badge:'esp'},
-  {d:164, type:'estudo', subject:'Auditoria Governamental', topic:'Revisão analítica', color:'#16a085', badge:'esp'},
-  {d:165, type:'estudo', subject:'AFO', topic:'Receita: estágios e fontes', color:'#d35400', badge:'esp'},
-  {d:166, type:'estudo', subject:'AFO', topic:'Dívida ativa', color:'#d35400', badge:'esp'},
-  {d:167, type:'estudo', subject:'Contabilidade Pública', topic:'Balanço Patrimonial', color:'#8e44ad', badge:'esp'},
-  {d:168, type:'revisao', subject:'Revisão', topic:'Revisão dos Dias 163-167', color:'#e67e22', badge:'rev'},
-
-  {d:169, type:'estudo', subject:'Contabilidade Pública', topic:'Demonstração de Fluxos de Caixa', color:'#8e44ad', badge:'esp'},
-  {d:170, type:'estudo', subject:'Contabilidade Pública', topic:'DMPL - Mutações do Patrimônio Líquido', color:'#8e44ad', badge:'esp'},
-  {d:171, type:'estudo', subject:'Direito Administrativo', topic:'Poderes administrativos II', color:'#27ae60', badge:'bas'},
-  {d:172, type:'estudo', subject:'Direito Administrativo', topic:'Uso e abuso de poder', color:'#27ae60', badge:'bas'},
-  {d:173, type:'estudo', subject:'Língua Portuguesa', topic:'Reescrita de frases II', color:'#34495e', badge:'bas'},
-  {d:174, type:'revisao', subject:'Revisão', topic:'Revisão dos Dias 169-173', color:'#e67e22', badge:'rev'},
-
-  {d:175, type:'estudo', subject:'Língua Portuguesa', topic:'Reescrita de textos de diferentes gêneros', color:'#34495e', badge:'bas'},
-  {d:176, type:'estudo', subject:'Língua Portuguesa', topic:'Revisão geral Português', color:'#34495e', badge:'bas'},
-  {d:177, type:'estudo', subject:'Análise de Dados', topic:'Regras de associação', color:'#9b59b6', badge:'esp'},
-  {d:178, type:'estudo', subject:'Análise de Dados', topic:'Clusterização', color:'#9b59b6', badge:'esp'},
-  {d:179, type:'estudo', subject:'Licitações e Contratos', topic:'Dispensa e inexigibilidade', color:'#f39c12', badge:'esp'},
-  {d:180, type:'revisao', subject:'Revisão', topic:'Revisão dos Dias 175-179', color:'#e67e22', badge:'rev'},
-
-  // Ciclo 31
-  {d:181, type:'estudo', subject:'Licitações e Contratos', topic:'Lei 10.520/2002 - Pregão', color:'#f39c12', badge:'esp'},
-  {d:182, type:'estudo', subject:'Licitações e Contratos', topic:'Decreto 7.892/2013 - SRP', color:'#f39c12', badge:'esp'},
-  {d:183, type:'estudo', subject:'Controle Externo', topic:'Regimento Interno do TCE-RJ I', color:'#c0392b', badge:'esp'},
-  {d:184, type:'estudo', subject:'Controle Externo', topic:'Regimento Interno do TCE-RJ II', color:'#c0392b', badge:'esp'},
-  {d:185, type:'estudo', subject:'Direito Administrativo', topic:'Regime jurídico-administrativo', color:'#27ae60', badge:'bas'},
-  {d:186, type:'revisao', subject:'Revisão', topic:'Revisão dos Dias 181-185', color:'#e67e22', badge:'rev'},
-
-  {d:187, type:'estudo', subject:'Direito Administrativo', topic:'Princípios expressos e implícitos', color:'#27ae60', badge:'bas'},
-  {d:188, type:'estudo', subject:'Direito Administrativo', topic:'Serviços públicos I', color:'#27ae60', badge:'bas'},
-  {d:189, type:'estudo', subject:'Controle Externo', topic:'Prestação de Contas: contas de governo', color:'#c0392b', badge:'esp'},
-  {d:190, type:'estudo', subject:'Controle Externo', topic:'Contas de gestão', color:'#c0392b', badge:'esp'},
-  {d:191, type:'estudo', subject:'Auditoria Governamental', topic:'Evidências de auditoria', color:'#16a085', badge:'esp'},
-  {d:192, type:'revisao', subject:'Revisão', topic:'Revisão dos Dias 187-191', color:'#e67e22', badge:'rev'},
-
-  {d:193, type:'estudo', subject:'Auditoria Governamental', topic:'Caracterizações de achados de auditoria', color:'#16a085', badge:'esp'},
-  {d:194, type:'estudo', subject:'Auditoria Governamental', topic:'Matrizes de achados e de responsabilização', color:'#16a085', badge:'esp'},
-  {d:195, type:'estudo', subject:'AFO', topic:'Despesa pública: conceito e classificações', color:'#d35400', badge:'esp'},
-  {d:196, type:'estudo', subject:'AFO', topic:'Despesa: estágios', color:'#d35400', badge:'esp'},
-  {d:197, type:'estudo', subject:'Contabilidade Pública', topic:'Notas explicativas', color:'#8e44ad', badge:'esp'},
-  {d:198, type:'revisao', subject:'Revisão', topic:'Revisão dos Dias 193-197', color:'#e67e22', badge:'rev'},
-
-  {d:199, type:'estudo', subject:'Contabilidade Pública', topic:'Consolidação das demonstrações', color:'#8e44ad', badge:'esp'},
-  {d:200, type:'estudo', subject:'Contabilidade Pública', topic:'Transações no setor público I', color:'#8e44ad', badge:'esp'},
-  {d:201, type:'estudo', subject:'Direito Administrativo', topic:'Serviços públicos II - delegação', color:'#27ae60', badge:'bas'},
-  {d:202, type:'estudo', subject:'Direito Administrativo', topic:'Concessão, permissão e autorização', color:'#27ae60', badge:'bas'},
-  {d:203, type:'estudo', subject:'Análise de Dados', topic:'Detecção de anomalias', color:'#9b59b6', badge:'esp'},
-  {d:204, type:'revisao', subject:'Revisão', topic:'Revisão dos Dias 199-203', color:'#e67e22', badge:'rev'},
-
-  {d:205, type:'estudo', subject:'Análise de Dados', topic:'Modelagem preditiva', color:'#9b59b6', badge:'esp'},
-  {d:206, type:'estudo', subject:'Análise de Dados', topic:'Aprendizado de máquina', color:'#9b59b6', badge:'esp'},
-  {d:207, type:'estudo', subject:'Licitações e Contratos', topic:'Lei 12.462/2011 - RDC', color:'#f39c12', badge:'esp'},
-  {d:208, type:'estudo', subject:'Licitações e Contratos', topic:'Lei 11.079/2004 - PPPs', color:'#f39c12', badge:'esp'},
-  {d:209, type:'estudo', subject:'Controle Externo', topic:'Revisão geral Controle Externo I', color:'#c0392b', badge:'esp'},
-  {d:210, type:'revisao', subject:'Revisão', topic:'Revisão dos Dias 205-209', color:'#e67e22', badge:'rev'},
-
-  {d:211, type:'estudo', subject:'Controle Externo', topic:'Revisão geral Controle Externo II', color:'#c0392b', badge:'esp'},
-  {d:212, type:'estudo', subject:'Controle Externo', topic:'Revisão geral Controle Externo III', color:'#c0392b', badge:'esp'},
-  {d:213, type:'estudo', subject:'Direito Administrativo', topic:'Organização administrativa: autarquias e fundações', color:'#27ae60', badge:'bas'},
-  {d:214, type:'estudo', subject:'Direito Administrativo', topic:'Empresas públicas e SEM', color:'#27ae60', badge:'bas'},
-  {d:215, type:'estudo', subject:'Auditoria Governamental', topic:'Relatórios de auditoria', color:'#16a085', badge:'esp'},
-  {d:216, type:'revisao', subject:'Revisão', topic:'Revisão dos Dias 211-215', color:'#e67e22', badge:'rev'},
-
-  {d:217, type:'estudo', subject:'Auditoria Governamental', topic:'Monitoramento', color:'#16a085', badge:'esp'},
-  {d:218, type:'estudo', subject:'Auditoria Governamental', topic:'Documentação da auditoria', color:'#16a085', badge:'esp'},
-  {d:219, type:'estudo', subject:'AFO', topic:'Restos a pagar', color:'#d35400', badge:'esp'},
-  {d:220, type:'estudo', subject:'AFO', topic:'Despesas de exercícios anteriores', color:'#d35400', badge:'esp'},
-  {d:221, type:'estudo', subject:'Contabilidade Pública', topic:'Transações no setor público II', color:'#8e44ad', badge:'esp'},
-  {d:222, type:'revisao', subject:'Revisão', topic:'Revisão dos Dias 217-221', color:'#e67e22', badge:'rev'},
-
-  {d:223, type:'estudo', subject:'Contabilidade Pública', topic:'Execução orçamentária e financeira I', color:'#8e44ad', badge:'esp'},
-  {d:224, type:'estudo', subject:'Contabilidade Pública', topic:'Execução orçamentária e financeira II', color:'#8e44ad', badge:'esp'},
-  {d:225, type:'estudo', subject:'Direito Administrativo', topic:'Terceiro setor', color:'#27ae60', badge:'bas'},
-  {d:226, type:'estudo', subject:'Direito Administrativo', topic:'Lei 13.019/2014', color:'#27ae60', badge:'bas'},
-  {d:227, type:'estudo', subject:'Análise de Dados', topic:'Mineração de texto', color:'#9b59b6', badge:'esp'},
-  {d:228, type:'revisao', subject:'Revisão', topic:'Revisão dos Dias 223-227', color:'#e67e22', badge:'rev'},
-
-  {d:229, type:'estudo', subject:'Análise de Dados', topic:'SQL básico: SELECT, FROM, WHERE', color:'#9b59b6', badge:'esp'},
-  {d:230, type:'estudo', subject:'Análise de Dados', topic:'SQL: JOINs', color:'#9b59b6', badge:'esp'},
-  {d:231, type:'estudo', subject:'Licitações e Contratos', topic:'Lei 8.987/1995 - Concessões', color:'#f39c12', badge:'esp'},
-  {d:232, type:'estudo', subject:'Licitações e Contratos', topic:'Lei 13.303/2016 - Estatais', color:'#f39c12', badge:'esp'},
-  {d:233, type:'estudo', subject:'Auditoria Governamental', topic:'Supervisão e controle de qualidade', color:'#16a085', badge:'esp'},
-  {d:234, type:'revisao', subject:'Revisão', topic:'Revisão dos Dias 229-233', color:'#e67e22', badge:'rev'},
-
-  {d:235, type:'estudo', subject:'Auditoria Governamental', topic:'NBASP Nível 1 - Princípios Basilares', color:'#16a085', badge:'esp'},
-  {d:236, type:'estudo', subject:'Auditoria Governamental', topic:'NBASP Nível 2 - Princípios Fundamentais', color:'#16a085', badge:'esp'},
-  {d:237, type:'estudo', subject:'AFO', topic:'Dívida flutuante e fundada', color:'#d35400', badge:'esp'},
-  {d:238, type:'estudo', subject:'AFO', topic:'Suprimento de fundos', color:'#d35400', badge:'esp'},
-  {d:239, type:'estudo', subject:'Contabilidade Pública', topic:'MCASP - aspectos gerais I', color:'#8e44ad', badge:'esp'},
-  {d:240, type:'revisao', subject:'Revisão', topic:'Revisão dos Dias 235-239', color:'#e67e22', badge:'rev'},
-
-  // Ciclo 41
-  {d:241, type:'estudo', subject:'Contabilidade Pública', topic:'MCASP - aspectos gerais II', color:'#8e44ad', badge:'esp'},
-  {d:242, type:'estudo', subject:'Contabilidade Pública', topic:'MCASP - aspectos gerais III', color:'#8e44ad', badge:'esp'},
-  {d:243, type:'estudo', subject:'Direito Administrativo', topic:'Controle da administração pública', color:'#27ae60', badge:'bas'},
-  {d:244, type:'estudo', subject:'Direito Administrativo', topic:'Lei 9.784/1999', color:'#27ae60', badge:'bas'},
-  {d:245, type:'estudo', subject:'Análise de Dados', topic:'SQL: GROUP BY, HAVING, ORDER BY', color:'#9b59b6', badge:'esp'},
-  {d:246, type:'revisao', subject:'Revisão', topic:'Revisão dos Dias 241-245', color:'#e67e22', badge:'rev'},
-
-  {d:247, type:'estudo', subject:'Análise de Dados', topic:'SQL: subqueries', color:'#9b59b6', badge:'esp'},
-  {d:248, type:'estudo', subject:'Análise de Dados', topic:'SQL: DDL e DML', color:'#9b59b6', badge:'esp'},
-  {d:249, type:'estudo', subject:'Licitações e Contratos', topic:'Fundamentos constitucionais', color:'#f39c12', badge:'esp'},
-  {d:250, type:'estudo', subject:'Licitações e Contratos', topic:'Características do contrato administrativo', color:'#f39c12', badge:'esp'},
-  {d:251, type:'estudo', subject:'Auditoria Governamental', topic:'NBASP Nível 3 - Requisitos Mandatórios', color:'#16a085', badge:'esp'},
-  {d:252, type:'revisao', subject:'Revisão', topic:'Revisão dos Dias 247-251', color:'#e67e22', badge:'rev'},
-
-  {d:253, type:'estudo', subject:'Auditoria Governamental', topic:'Revisão geral Auditoria I', color:'#16a085', badge:'esp'},
-  {d:254, type:'estudo', subject:'Auditoria Governamental', topic:'Revisão geral Auditoria II', color:'#16a085', badge:'esp'},
-  {d:255, type:'estudo', subject:'AFO', topic:'LRF I - Disposições preliminares', color:'#d35400', badge:'esp'},
-  {d:256, type:'estudo', subject:'AFO', topic:'LRF II - Planejamento', color:'#d35400', badge:'esp'},
-  {d:257, type:'estudo', subject:'Contabilidade Pública', topic:'Revisão geral Contabilidade I', color:'#8e44ad', badge:'esp'},
-  {d:258, type:'revisao', subject:'Revisão', topic:'Revisão dos Dias 253-257', color:'#e67e22', badge:'rev'},
-
-  {d:259, type:'estudo', subject:'Contabilidade Pública', topic:'Revisão geral Contabilidade II', color:'#8e44ad', badge:'esp'},
-  {d:260, type:'estudo', subject:'Contabilidade Pública', topic:'Revisão geral Contabilidade III', color:'#8e44ad', badge:'esp'},
-  {d:261, type:'estudo', subject:'Direito Administrativo', topic:'Lei Estadual 5.427/09', color:'#27ae60', badge:'bas'},
-  {d:262, type:'estudo', subject:'Direito Administrativo', topic:'Licitações e contratos I', color:'#27ae60', badge:'bas'},
-  {d:263, type:'estudo', subject:'Análise de Dados', topic:'Planilhas: funções básicas', color:'#9b59b6', badge:'esp'},
-  {d:264, type:'revisao', subject:'Revisão', topic:'Revisão dos Dias 259-263', color:'#e67e22', badge:'rev'},
-
-  {d:265, type:'estudo', subject:'Análise de Dados', topic:'Planilhas: funções avançadas', color:'#9b59b6', badge:'esp'},
-  {d:266, type:'estudo', subject:'Análise de Dados', topic:'Planilhas: análise de dados', color:'#9b59b6', badge:'esp'},
-  {d:267, type:'estudo', subject:'Licitações e Contratos', topic:'Formalização e fiscalização', color:'#f39c12', badge:'esp'},
-  {d:268, type:'estudo', subject:'Licitações e Contratos', topic:'Aspectos orçamentários e financeiros', color:'#f39c12', badge:'esp'},
-  {d:269, type:'estudo', subject:'AFO', topic:'LRF III - Receita e despesa', color:'#d35400', badge:'esp'},
-  {d:270, type:'revisao', subject:'Revisão', topic:'Revisão dos Dias 265-269', color:'#e67e22', badge:'rev'},
-
-  {d:271, type:'estudo', subject:'AFO', topic:'LRF IV - Dívida e endividamento', color:'#d35400', badge:'esp'},
-  {d:272, type:'estudo', subject:'AFO', topic:'Lei 4.320/1964', color:'#d35400', badge:'esp'},
-  {d:273, type:'estudo', subject:'Direito Administrativo', topic:'Licitações e contratos II - pregão', color:'#27ae60', badge:'bas'},
-  {d:274, type:'estudo', subject:'Direito Administrativo', topic:'Revisão geral Direito Administrativo', color:'#27ae60', badge:'bas'},
-  {d:275, type:'estudo', subject:'Análise de Dados', topic:'Revisão geral Análise de Dados', color:'#9b59b6', badge:'esp'},
-  {d:276, type:'revisao', subject:'Revisão', topic:'Revisão dos Dias 271-275', color:'#e67e22', badge:'rev'},
-
-  {d:277, type:'estudo', subject:'Licitações e Contratos', topic:'Sanção administrativa', color:'#f39c12', badge:'esp'},
-  {d:278, type:'estudo', subject:'Licitações e Contratos', topic:'Equilíbrio econômico-financeiro', color:'#f39c12', badge:'esp'},
-  {d:279, type:'estudo', subject:'AFO', topic:'Transferências voluntárias', color:'#d35400', badge:'esp'},
-  {d:280, type:'estudo', subject:'AFO', topic:'Revisão geral AFO', color:'#d35400', badge:'esp'},
-  {d:281, type:'estudo', subject:'Controle Externo', topic:'Revisão geral Controle Externo IV', color:'#c0392b', badge:'esp'},
-  {d:282, type:'revisao', subject:'Revisão', topic:'Revisão dos Dias 277-281', color:'#e67e22', badge:'rev'},
-
-  {d:283, type:'estudo', subject:'Controle Externo', topic:'Revisão geral Controle Externo V', color:'#c0392b', badge:'esp'},
-  {d:284, type:'estudo', subject:'Auditoria Governamental', topic:'Revisão geral Auditoria III', color:'#16a085', badge:'esp'},
-  {d:285, type:'estudo', subject:'Licitações e Contratos', topic:'Garantia contratual', color:'#f39c12', badge:'esp'},
-  {d:286, type:'estudo', subject:'Licitações e Contratos', topic:'Alteração do objeto', color:'#f39c12', badge:'esp'},
-  {d:287, type:'estudo', subject:'Contabilidade Pública', topic:'Revisão geral Contabilidade IV', color:'#8e44ad', badge:'esp'},
-  {d:288, type:'revisao', subject:'Revisão', topic:'Revisão dos Dias 283-287', color:'#e67e22', badge:'rev'},
-
-  {d:289, type:'estudo', subject:'Contabilidade Pública', topic:'Revisão geral Contabilidade V', color:'#8e44ad', badge:'esp'},
-  {d:290, type:'estudo', subject:'AFO', topic:'Simulado AFO', color:'#d35400', badge:'esp'},
-  {d:291, type:'estudo', subject:'Direito Administrativo', topic:'Simulado Direito Administrativo', color:'#27ae60', badge:'bas'},
-  {d:292, type:'estudo', subject:'Licitações e Contratos', topic:'Prorrogação de prazos', color:'#f39c12', badge:'esp'},
-  {d:293, type:'estudo', subject:'Licitações e Contratos', topic:'Convênios e ajustes + revisão geral', color:'#f39c12', badge:'esp'},
-  {d:294, type:'revisao', subject:'Revisão', topic:'Revisão dos Dias 289-293', color:'#e67e22', badge:'rev'},
-
-  // Ciclos finais - Revisão geral
-  {d:295, type:'estudo', subject:'Controle Externo', topic:'Simulado Controle Externo', color:'#c0392b', badge:'esp'},
-  {d:296, type:'estudo', subject:'Auditoria Governamental', topic:'Simulado Auditoria', color:'#16a085', badge:'esp'},
-  {d:297, type:'estudo', subject:'Contabilidade Pública', topic:'Simulado Contabilidade', color:'#8e44ad', badge:'esp'},
-  {d:298, type:'estudo', subject:'AFO', topic:'Simulado AFO II', color:'#d35400', badge:'esp'},
-  {d:299, type:'estudo', subject:'Análise de Dados', topic:'Simulado Análise de Dados', color:'#9b59b6', badge:'esp'},
-  {d:300, type:'revisao', subject:'Revisão', topic:'Revisão dos Dias 295-299', color:'#e67e22', badge:'rev'},
-
-  {d:301, type:'estudo', subject:'Direito Constitucional', topic:'Revisão geral Dir. Constitucional', color:'#2980b9', badge:'bas'},
-  {d:302, type:'estudo', subject:'Direito Administrativo', topic:'Revisão geral Dir. Administrativo', color:'#27ae60', badge:'bas'},
-  {d:303, type:'estudo', subject:'Administração Pública', topic:'Revisão geral Administração Pública', color:'#3498db', badge:'bas'},
-  {d:304, type:'estudo', subject:'Língua Portuguesa', topic:'Revisão geral Português', color:'#34495e', badge:'bas'},
-  {d:305, type:'estudo', subject:'Licitações e Contratos', topic:'Revisão geral Licitações', color:'#f39c12', badge:'esp'},
-  {d:306, type:'revisao', subject:'Revisão', topic:'Revisão dos Dias 301-305', color:'#e67e22', badge:'rev'},
-
-  {d:307, type:'estudo', subject:'Controle Externo', topic:'REVISÃO FINAL - Bloco 1', color:'#c0392b', badge:'esp'},
-  {d:308, type:'estudo', subject:'Auditoria Governamental', topic:'REVISÃO FINAL - Bloco 1', color:'#16a085', badge:'esp'},
-  {d:309, type:'estudo', subject:'AFO', topic:'REVISÃO FINAL - Bloco 1', color:'#d35400', badge:'esp'},
-  {d:310, type:'estudo', subject:'Contabilidade Pública', topic:'REVISÃO FINAL - Bloco 1', color:'#8e44ad', badge:'esp'},
-  {d:311, type:'estudo', subject:'Análise de Dados', topic:'REVISÃO FINAL - Bloco 1', color:'#9b59b6', badge:'esp'},
-  {d:312, type:'revisao', subject:'Revisão', topic:'Revisão dos Dias 307-311', color:'#e67e22', badge:'rev'},
-
-  {d:313, type:'estudo', subject:'Direito Constitucional', topic:'REVISÃO FINAL - Bloco 1', color:'#2980b9', badge:'bas'},
-  {d:314, type:'estudo', subject:'Direito Administrativo', topic:'REVISÃO FINAL - Bloco 1', color:'#27ae60', badge:'bas'},
-  {d:315, type:'estudo', subject:'Licitações e Contratos', topic:'REVISÃO FINAL - Bloco 1', color:'#f39c12', badge:'esp'},
-  {d:316, type:'estudo', subject:'Administração Pública', topic:'REVISÃO FINAL - Bloco 1', color:'#3498db', badge:'bas'},
-  {d:317, type:'estudo', subject:'Língua Portuguesa', topic:'REVISÃO FINAL - Bloco 1', color:'#34495e', badge:'bas'},
-  {d:318, type:'revisao', subject:'Revisão', topic:'Revisão dos Dias 313-317', color:'#e67e22', badge:'rev'},
-
-  {d:319, type:'estudo', subject:'SIMULADO', topic:'SIMULADO COMPLETO - Bloco 1', color:'#c0392b', badge:'esp'},
-  {d:320, type:'estudo', subject:'SIMULADO', topic:'SIMULADO COMPLETO - Bloco 2', color:'#c0392b', badge:'esp'},
-  {d:321, type:'estudo', subject:'SIMULADO', topic:'SIMULADO COMPLETO - Bloco 3', color:'#c0392b', badge:'esp'},
-  {d:322, type:'estudo', subject:'SIMULADO', topic:'SIMULADO COMPLETO - Bloco 4', color:'#c0392b', badge:'esp'},
-  {d:323, type:'estudo', subject:'Controle Externo', topic:'Correção simulados - CE', color:'#c0392b', badge:'esp'},
-  {d:324, type:'revisao', subject:'Revisão', topic:'Revisão dos Dias 319-323', color:'#e67e22', badge:'rev'},
-
-  {d:325, type:'estudo', subject:'Auditoria Governamental', topic:'Correção simulados - Auditoria', color:'#16a085', badge:'esp'},
-  {d:326, type:'estudo', subject:'AFO', topic:'Correção simulados - AFO', color:'#d35400', badge:'esp'},
-  {d:327, type:'estudo', subject:'Contabilidade Pública', topic:'Correção simulados - Contab', color:'#8e44ad', badge:'esp'},
-  {d:328, type:'estudo', subject:'Direito Constitucional', topic:'Correção simulados - Const', color:'#2980b9', badge:'bas'},
-  {d:329, type:'estudo', subject:'Direito Administrativo', topic:'Correção simulados - Adm', color:'#27ae60', badge:'bas'},
-  {d:330, type:'revisao', subject:'Revisão', topic:'Revisão dos Dias 325-329', color:'#e67e22', badge:'rev'},
-
-  {d:331, type:'estudo', subject:'Análise de Dados', topic:'Revisão relâmpago - Análise', color:'#9b59b6', badge:'esp'},
-  {d:332, type:'estudo', subject:'Licitações e Contratos', topic:'Revisão relâmpago - Licitações', color:'#f39c12', badge:'esp'},
-  {d:333, type:'estudo', subject:'Administração Pública', topic:'Revisão relâmpago - Adm Públ', color:'#3498db', badge:'bas'},
-  {d:334, type:'estudo', subject:'Língua Portuguesa', topic:'Revisão relâmpago - Português', color:'#34495e', badge:'bas'},
-  {d:335, type:'estudo', subject:'Controle Externo', topic:'Revisão relâmpago - CE', color:'#c0392b', badge:'esp'},
-  {d:336, type:'revisao', subject:'Revisão', topic:'Revisão dos Dias 331-335', color:'#e67e22', badge:'rev'},
-
-  {d:337, type:'estudo', subject:'Auditoria Governamental', topic:'Revisão relâmpago - Auditoria', color:'#16a085', badge:'esp'},
-  {d:338, type:'estudo', subject:'AFO', topic:'Revisão relâmpago - AFO', color:'#d35400', badge:'esp'},
-  {d:339, type:'estudo', subject:'Contabilidade Pública', topic:'Revisão relâmpago - Contab', color:'#8e44ad', badge:'esp'},
-  {d:340, type:'estudo', subject:'Direito Constitucional', topic:'Revisão relâmpago - Const', color:'#2980b9', badge:'bas'},
-  {d:341, type:'estudo', subject:'Direito Administrativo', topic:'Revisão relâmpago - Adm', color:'#27ae60', badge:'bas'},
-  {d:342, type:'revisao', subject:'Revisão', topic:'Revisão dos Dias 337-341', color:'#e67e22', badge:'rev'},
-
-  {d:343, type:'estudo', subject:'Todas', topic:'REVISÃO GERAL FINAL - Dia 1', color:'#c0392b', badge:'esp'},
-  {d:344, type:'estudo', subject:'Todas', topic:'REVISÃO GERAL FINAL - Dia 2', color:'#c0392b', badge:'esp'},
-  {d:345, type:'estudo', subject:'Todas', topic:'REVISÃO GERAL FINAL - Dia 3', color:'#c0392b', badge:'esp'},
-  {d:346, type:'estudo', subject:'Todas', topic:'REVISÃO GERAL FINAL - Dia 4', color:'#c0392b', badge:'esp'},
-  {d:347, type:'estudo', subject:'Todas', topic:'REVISÃO GERAL FINAL - Dia 5', color:'#c0392b', badge:'esp'},
-  {d:348, type:'revisao', subject:'Revisão', topic:'ÚLTIMA REVISÃO - Véspera da prova', color:'#e67e22', badge:'rev'},
-
-  {d:349, type:'estudo', subject:'Todas', topic:'Revisão Caderno de Erros', color:'#9b59b6', badge:'esp'},
-  {d:350, type:'estudo', subject:'Todas', topic:'Macetes e decorebas finais', color:'#9b59b6', badge:'esp'},
-  {d:351, type:'estudo', subject:'Todas', topic:'Simulado leve', color:'#9b59b6', badge:'esp'},
-  {d:352, type:'estudo', subject:'Todas', topic:'Leitura da legislação seca', color:'#9b59b6', badge:'esp'},
-  {d:353, type:'estudo', subject:'Todas', topic:'Revisão Anki massiva', color:'#9b59b6', badge:'esp'},
-  {d:354, type:'revisao', subject:'Revisão', topic:'Dia 354 - Revisão pré-prova', color:'#e67e22', badge:'rev'},
-
-  {d:355, type:'estudo', subject:'Todas', topic:'Revisão estratégica - Matérias fracas', color:'#c0392b', badge:'esp'},
-  {d:356, type:'estudo', subject:'Todas', topic:'Questões discursivas', color:'#c0392b', badge:'esp'},
-  {d:357, type:'estudo', subject:'Todas', topic:'Simulado final cronometrado', color:'#c0392b', badge:'esp'},
-  {d:358, type:'estudo', subject:'Todas', topic:'Descanso ativo - Leitura leve', color:'#c0392b', badge:'esp'},
-  {d:359, type:'estudo', subject:'Todas', topic:'Organização para a prova', color:'#c0392b', badge:'esp'},
-  {d:360, type:'revisao', subject:'🎯 DIA DA PROVA! Boa sorte!', color:'#e74c3c', badge:'rev'},
-];
-
-// =================== ESTADO ===================
-let state = {
-  currentDay: parseInt(localStorage.getItem('currentDay') || '1'),
-  stats: JSON.parse(localStorage.getItem('tceStats') || '{}'),
-  errors: JSON.parse(localStorage.getItem('tceErrors') || '[]'),
-  checkboxes: JSON.parse(localStorage.getItem('tceCheckboxes') || '{}')
-};
-
-function saveState() {
-  localStorage.setItem('tceStats', JSON.stringify(state.stats));
-  localStorage.setItem('tceErrors', JSON.stringify(state.errors));
-  localStorage.setItem('tceCheckboxes', JSON.stringify(state.checkboxes));
-  localStorage.setItem('currentDay', state.currentDay);
-}
-
-// =================== TABS ===================
-function showTab(tabId, ev) {
-  document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
-  document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
-  document.getElementById(tabId).style.display = 'block';
-  ev.target.classList.add('active');
-  if (tab === 'stats') renderStats();
-  if (tab === 'errors') renderErrors();
-  if (tab === 'schedule') renderSchedule();
-}
-
-// =================== NAVEGAÇÃO ===================
-function changeDay(delta) {
-  state.currentDay = Math.max(1, Math.min(360, state.currentDay + delta));
-  renderDay();
-  saveState();
-}
-function jumpToDay() {
-  const val = parseInt(document.getElementById('jumpDay').value);
-  if (val >= 1 && val <= 360) {
-    state.currentDay = val;
-    renderDay();
-    saveState();
-  }
-}
-function markToday() {
-  saveState();
-  alert('✅ Dia ' + state.currentDay + ' marcado como dia atual!');
-}
-
-// =================== RENDER DIA ===================
-function renderDay() {
-  const day = SCHEDULE.find(s => s.d === state.currentDay);
-  if (!day) return;
-  document.getElementById('dayDisplay').textContent = `Dia ${state.currentDay} de 360`;
-  
-  const pct = ((state.currentDay / 360) * 100).toFixed(1);
-  document.getElementById('progressFill').style.width = pct + '%';
-  document.getElementById('progressText').textContent = `Progresso: ${pct}% (${state.currentDay}/360 dias)`;
-
-  const container = document.getElementById('dayContent');
-  
-  const typeBadge = day.type === 'revisao' ? 
-    '<span class="badge badge-rev">📖 DIA DE REVISÃO</span>' : 
-    (day.badge === 'esp' ? '<span class="badge badge-esp">⭐ ESPECÍFICA</span>' : '<span class="badge badge-bas">BÁSICA</span>');
-
-  let html = `
-    <div class="day-header" style="border-color:${day.color}; background:${day.color}10;">
-        <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
-          <h2 style="color:${day.color};">Dia ${state.currentDay} — ${day.subject}</h2>
-          ${typeBadge}
-        </div>
-        <p class="topic"><strong>📚 Tópico do dia:</strong> ${day.topic}</p>
-    </div>
-  `;
-
-  if (day.type === 'revisao') {
-    html += `
-      <div class="info-msg">
-        <strong>🔄 Dia de Revisão:</strong> Hoje é dia de revisar os 5 dias anteriores!<br>
-        • Releia seus resumos e Anki<br>
-        • Revisite o Caderno de Erros<br>
-        • Refaça as questões que errou<br>
-        <strong>Meta:</strong> 3 horas de consol intensa
-      </div>
-    `;
-  }
-
-  const dayKey = `d${state.currentDay}`;
-  const checks = state.checkboxes[dayKey] || {};
-
-  html += `
-    <h3 style="color:#1e3c72; margin:15px 0;">🎯 Os 4 eixos do dia (3h total)</h3>
-    <div class="axes">
-      <div class="axis">
-        <h3><span class="axis-icon pdf-icon">📖</span> PDF (1h30)</h3>
-        <p>Leia o PDF sobre: <strong>${day.topic}</strong></p>
-        <p style="margin-top:8px;">
-          <input type="checkbox" ${checks.pdf?'checked':''} onchange="toggleCheck('pdf')"> PDF lido integralmente<br>
-        </p>
-      </div>
-
-      <div class="axis">
-        <h3><span class="axis-icon quest-icon">📝</span> Questões (45min)</h3>
-        <p>Faça <strong>30 questões</strong> sobre: <strong>${day.subject}</strong></p>
-        <div class="form-row" style="margin-top:10px;">
-          <div>
-            <label>Acertos</label>
-            <input type="number" id="q_acertos" min="0" max="30" value="${checks.acertos||0}">
+          <strong>Progresso geral</strong>
+          <div class="progress-wrap" style="margin-top:8px; width:260px; max-width:100%;">
+            <div id="generalProgress" class="progress-bar"></div>
           </div>
-          <div>
-            <label>Erros</label>
-            <input type="number" id="q_erros" min="0" max="30" value="${checks.erros||0}">
-          </div>
+          <small id="generalProgressText" class="muted">0 de 360 dias concluídos</small>
+        </div>
+
+        <div class="backup-area">
+          <button type="button" id="exportBackupBtn" class="secondary">Exportar backup</button>
+          <label for="backupInput" class="file-label">Importar backup</label>
+          <input type="file" id="backupInput" accept="application/json" />
         </div>
       </div>
 
-      <div class="axis">
-        <h3><span class="axis-icon anki-icon">🧠</span> Anki (30min)</h3>
-        <p>Revise flashcards sobre o tema. Crie novos flashcards para conceitos-chave do dia.</p>
-        <p style="margin-top:8px;">
-          <input type="checkbox" ${checks.anki?'checked':''} onchange="toggleCheck('anki')"> Anki revisado<br>
-        </p>
+      <nav class="tabs" aria-label="Menu principal">
+        <button type="button" class="tab-button active" data-tab="agenda">Agenda do Dia</button>
+        <button type="button" class="tab-button" data-tab="stats">Estatísticas</button>
+        <button type="button" class="tab-button" data-tab="errors">Caderno de Erros</button>
+        <button type="button" class="tab-button" data-tab="schedule">Cronograma Completo</button>
+      </nav>
+    </section>
+
+    <section id="agenda" class="card tab-content">
+      <h2>Agenda do Dia</h2>
+
+      <div class="day-controls">
+        <button type="button" id="prevDayBtn" class="secondary">Dia anterior</button>
+
+        <div>
+          <label for="currentDayInput">Dia</label>
+          <input type="number" id="currentDayInput" min="1" max="360" value="1" />
+        </div>
+
+        <button type="button" id="goDayBtn">Ir</button>
+        <button type="button" id="nextDayBtn" class="secondary">Próximo dia</button>
+        <button type="button" id="markTodayBtn" class="success">Marcar como hoje</button>
       </div>
 
-      <div class="axis">
-        <h3><span class="axis-icon error-icon">📕</span> Caderno de Erros (15min)</h3>
-        <p>Anote o que errou e o que aprendeu hoje. Adicione na aba "Caderno de Erros".</p>
-        <p style="margin-top:8px;">
-          <input type="checkbox" ${checks.caderno?'checked':''} onchange="toggleCheck('caderno')"> Caderno atualizado<br>
+      <div id="agendaContent"></div>
+    </section>
+
+    <section id="stats" class="card tab-content hidden">
+      <h2>Estatísticas Gerais por Matéria</h2>
+      <p class="muted">
+        O quadro abaixo consolida questões, acertos, erros, percentual de acerto, dias concluídos,
+        dias não encerrados e evolução por matéria.
+      </p>
+
+      <div class="grid grid-4" id="statsCards"></div>
+
+      <h3>Detalhamento por Matéria</h3>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Matéria</th>
+              <th>Questões</th>
+              <th>Acertos</th>
+              <th>Erros</th>
+              <th>% Acerto</th>
+              <th>Concluídos</th>
+              <th>Não encerrados</th>
+              <th>Evolução</th>
+            </tr>
+          </thead>
+          <tbody id="statsTableBody"></tbody>
+        </table>
       </div>
-    </div>
 
-      <div class="stats-panel">
-        <h3>💾 Registrar estatísticas do dia</h3>
-        <button class="btn-save" onclick="saveDayStats()">Salvar dados do Dia ${state.currentDay}</button>
+      <div class="stats-note" id="statsNote"></div>
+
+      <div style="margin-top:16px;">
+        <button type="button" id="resetStatsBtn" class="danger">Resetar todas as estatísticas</button>
       </div>
-  `;
+    </section>
 
-  container.innerHTML = html;
-}
+    <section id="errors" class="card tab-content hidden">
+      <h2>Caderno de Erros</h2>
+      <p class="muted">
+        Registre os conceitos errados, macetes e pontos fracos. Revise sempre nos dias de revisão,
+        a cada 6 dias.
+      </p>
 
-function toggleCheck(key) {
-  const dayKey = `d${state.currentDay}`;
-  state.checkboxes[dayKey] = state.checkboxes[dayKey] || {};
-  state.checkboxes[dayKey][key] = !state.checkboxes[dayKey][key];
-  saveState();
-  renderDay();
-}
+      <div class="grid grid-3">
+        <div>
+          <label for="errorSubject">Matéria</label>
+          <select id="errorSubject"></select>
+        </div>
 
-function saveDayStats() {
-  const acertos = parseInt(document.getElementById('q_acertos').value) || 0;
-  const erros = parseInt(document.getElementById('q_erros').value) || 0;
-  const day = SCHEDULE.find(s => s.d === state.currentDay);
-  if (!day || day.type === 'revisao') { alert('Dia de revisão — sem registro de questões.'); return; }
+        <div>
+          <label for="errorTopic">Tópico ou observação</label>
+          <input type="text" id="errorTopic" placeholder="Ex.: Controle externo, competência, prazos..." />
+        </div>
 
-  const subj = day.subject;
-  state.stats[subj] = state.stats[subj] || {questoes:0, acertos:0, erros:0};
-  state.stats[subj].questoes += 30;
-  state.stats[subj].acertos += acertos;
-  state.stats[subj].erros += erros;
+        <div>
+          <label for="errorFilter">Filtrar por matéria</label>
+          <select id="errorFilter">
+            <option value="all">Todas as matérias</option>
+          </select>
+        </div>
+      </div>
 
-  state.checkboxes[`d${state.currentDay}`] = state.checkboxes[`d${state.currentDay}`] || {};
-  state.checkboxes[`d${state.currentDay}`].acertos = acertos;
-  state.checkboxes[`d${state.currentDay}`].erros = erros;
+      <div style="margin-top:14px;">
+        <label for="errorNote">Explicação ou o que aprendi</label>
+        <textarea id="errorNote" placeholder="Escreva aqui a correção, explicação, macete ou ponto de atenção."></textarea>
+      </div>
 
-  saveState();
-  alert(`✅ Dia ${state.currentDay} salvo!\n\n${subj}: ${acertos}/30 acertos (${((acertos/30)*100).toFixed(0)}%)`);
-}
+      <div style="margin-top:14px;">
+        <button type="button" id="addErrorBtn">Adicionar ao caderno</button>
+      </div>
 
-// =================== STATS ===================
-function renderStats() {
-  const subjects = ['Controle Externo','Auditoria Governamental','AFO','Contabilidade Pública','Análise de Dados','Direito Administrativo','Direito Constitucional','Administração Pública','Licitações e Contratos','Língua Portuguesa'];
-  let totalQ=0, totalAc=0, totalEr=0;
-  const tbody = document.getElementById('statsTableBody');
-  tbody.innerHTML = '';
+      <h3>Registros salvos</h3>
+      <div id="errorsList"></div>
+    </section>
 
-  subjects.forEach(s => {
-    const d = state.stats[s] || {questoes:0, acertos:0, erros:0};
-    totalQ += d.questoes; totalAc += d.acertos; totalEr += d.erros;
-    const pct = d.questoes > 0 ? ((d.acertos/d.questoes)*100).toFixed(1) : '0.0';
-    tbody.innerHTML += `
-      <tr>
-        <td><strong>${s}</strong></td>
-        <td>${d.questoes}</td>
-        <td style="color:#11998e;">${d.acertos}</td>
-        <td style="color:#e74c3c;">${d.erros}</td>
-        <td><strong>${pct}%</strong></td>
-        <td><div class="bar"><div class="bar-fill" style="width:${pct}%"></div></div></td>
-      </tr>
-    `;
-  });
+    <section id="schedule" class="card tab-content hidden">
+      <h2>Cronograma de 360 Dias</h2>
+      <p class="muted">
+        Estrutura: a cada 6 dias, são 5 dias de matéria nova e 1 dia de revisão.
+      </p>
+      <p class="muted">
+        Eixos diários: PDF 1h30, questões 45min, Anki 30min e Caderno de Erros 15min.
+      </p>
+      <p class="muted">
+        Use a coluna Status para marcar Concluído ou Não encerrado. Quando um tópico não for encerrado,
+        ele será retomado no próximo dia da mesma matéria e o tópico previsto será adiado.
+      </p>
 
-  const pctGeral = totalQ > 0 ? ((totalAc/totalQ)*100).toFixed(1) : '0.0';
-  document.getElementById('globalStats').innerHTML = `
-    <div class="stat-box"><div class="num">${totalQ}</div><div class="lbl">Total de questões</div></div>
-    <div class="stat-box"><div class="num" style="color:#11998e;">${totalAc}</div><div class="lbl">Acertos</div></div>
-    <div class="stat-box"><div class="num" style="color:#e74c3c;">${totalEr}</div><div class="lbl">Erros</div></div>
-    <div class="stat-box"><div class="num">${pctGeral}%</div><div class="lbl">Aproveitamento</div></div>
-  `;
-}
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Dia</th>
+              <th>Tipo</th>
+              <th>Matéria</th>
+              <th>Tópico</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="scheduleTableBody"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
 
-function resetStats() {
-  if (confirm('⚠️ Tem certeza? Isso apagará TODAS as estatísticas e o progresso!')) {
-    localStorage.clear();
-    location.reload();
-  }
-}
+  <script>
+    const STORAGE_KEY = "tcerj2027_state_v4";
+    const TOTAL_DAYS = 360;
 
-// =================== CADERNO DE ERROS ===================
-function renderErrors() {
-  const subjects = ['Controle Externo','Auditoria Governamental','AFO','Contabilidade Pública','Análise de Dados','Direito Administrativo','Direito Constitucional','Administração Pública','Licitações e Contratos','Língua Portuguesa'];
-  const sel = document.getElementById('errSubject');
-  sel.innerHTML = subjects.map(s => `<option>${s}</option>`).join('');
+    const subjects = [
+      "Controle Externo",
+      "Direito Constitucional",
+      "Direito Administrativo",
+      "Administração Financeira e Orçamentária",
+      "Contabilidade Pública",
+      "Auditoria Governamental",
+      "Português",
+      "Raciocínio Lógico",
+      "Administração Pública",
+      "Tecnologia da Informação"
+    ];
 
-  const list = document.getElementById('errorsList');
-  if (state.errors.length === 0) {
-    list.innerHTML = '<p style="color:#888; text-align:center; padding:20px;">Nenhum erro registrado ainda. Adicione o primeiro acima! 📕</p>';
-    return;
-  }
-  list.innerHTML = state.errors.map((e,i) => `
-    <div class="error-entry">
-      <strong>${e.subject}</strong> — ${e.topic}
-      <div style="margin-top:5px;">${e.note}</div>
-      <button onclick="removeError(${i})" style="margin-top:6px; background:#e74c3c; color:white; border:none; padding:4px 10px; border-radius:4px; font-size:11px; cursor:pointer;">🗑️ Remover</button>
-    </div>
-  `).join('');
-}
+    const topicMap = {
+      "Controle Externo": [
+        "Controle da Administração Pública: conceito, abrangência e espécies",
+        "Controle externo e controle interno: diferenças, integração e competências",
+        "Tribunais de Contas: natureza, composição, competências e jurisdição",
+        "Fiscalização contábil, financeira, orçamentária, operacional e patrimonial",
+        "Tomada e prestação de contas",
+        "Jurisprudência, súmulas e entendimentos aplicáveis ao controle externo"
+      ],
+      "Direito Constitucional": [
+        "Princípios fundamentais",
+        "Direitos e garantias fundamentais",
+        "Organização do Estado",
+        "Administração pública na Constituição",
+        "Controle de constitucionalidade"
+      ],
+      "Direito Administrativo": [
+        "Atos administrativos",
+        "Poderes administrativos",
+        "Licitações e contratos",
+        "Servidores públicos",
+        "Responsabilidade civil do Estado"
+      ],
+      "Administração Financeira e Orçamentária": [
+        "Orçamento público",
+        "Princípios orçamentários",
+        "Receita pública",
+        "Despesa pública",
+        "Lei de Responsabilidade Fiscal"
+      ],
+      "Contabilidade Pública": [
+        "Patrimônio público",
+        "Plano de contas aplicado ao setor público",
+        "Demonstrações contábeis",
+        "Variações patrimoniais",
+        "NBC TSP"
+      ],
+      "Auditoria Governamental": [
+        "Normas de auditoria",
+        "Planejamento de auditoria",
+        "Evidências e papéis de trabalho",
+        "Relatório de auditoria",
+        "Auditoria operacional"
+      ],
+      "Português": [
+        "Interpretação de textos",
+        "Morfologia",
+        "Sintaxe",
+        "Pontuação",
+        "Coesão e coerência"
+      ],
+      "Raciocínio Lógico": [
+        "Proposições",
+        "Argumentação lógica",
+        "Conjuntos",
+        "Probabilidade",
+        "Análise combinatória"
+      ],
+      "Administração Pública": [
+        "Modelos de administração pública",
+        "Governança",
+        "Gestão por resultados",
+        "Planejamento estratégico",
+        "Processos organizacionais"
+      ],
+      "Tecnologia da Informação": [
+        "Segurança da informação",
+        "Banco de dados",
+        "Redes de computadores",
+        "Excel e ferramentas de escritório",
+        "Governança de TI"
+      ]
+    };
 
-function addError() {
-  const subject = document.getElementById('errSubject').value;
-  const topic = document.getElementById('errTopic').value.trim();
-  const note = document.getElementById('errNote').value.trim();
-  if (!topic || !note) { alert('Preencha o tópico e a explicação!'); return; }
-  state.errors.unshift({subject, topic, note, date: new Date().toLocaleDateString('pt-BR')});
-  saveState();
-  document.getElementById('errTopic').value = '';
-  document.getElementById('errNote').value = '';
-  renderErrors();
-}
+    function clampDay(value) {
+      const day = Number(value);
+      if (Number.isNaN(day)) return 1;
+      return Math.min(TOTAL_DAYS, Math.max(1, day));
+    }
 
-function removeError(i) {
-  if (confirm('Remover este erro?')) {
-    state.errors.splice(i, 1);
-    saveState();
-    renderErrors();
-  }
-}
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
 
-// =================== CRONOGRAMA ===================
-function renderSchedule() {
-  const tbody = document.getElementById('scheduleBody');
-  const search = (document.getElementById('searchSchedule').value || '').toLowerCase();
-  const filtered = SCHEDULE.filter(s => 
-    s.subject.toLowerCase().includes(search) || 
-    s.topic.toLowerCase().includes(search)
-  );
-  tbody.innerHTML = filtered.slice(0, 200).map(s => {
-    const type = s.type === 'revisao' ? '<span class="badge badge-rev">📖 Rev.</span>' : 
-                 (s.badge === 'esp' ? '<span class="badge badge-esp">Esp.</span>' : '<span class="badge badge-bas">Bás.</span>');
-    const status = s.d <= state.currentDay ? '✅ Feito' : '⏳ Pendente';
-    return `<tr>
-      <td><strong>Dia ${s.d}</strong></td>
-      <td>${type}</td>
-      <td style="color:${s.color};"><strong>${s.subject}</strong></td>
-      <td>${s.topic}</td>
-      <td>${status}</td>
-    </tr>`;
-  }).join('');
-}
+    function getBaseTopic(subject, index) {
+      const topics = topicMap[subject] || [];
+      if (!topics.length) {
+        return `Tópico ${index + 1}`;
+      }
+      return topics[index % topics.length];
+    }
 
-document.getElementById('searchSchedule').addEventListener('input', renderSchedule);
+    function generateBaseSchedule() {
+      const schedule = [];
+      const occurrenceCount = {};
 
-// =================== INIT ===================
-renderDay();
-</script>
+      subjects.forEach(subject => {
+        occurrenceCount[subject] = 0;
+      });
+
+      for (let day = 1; day <= TOTAL_DAYS; day++) {
+        const isReview = day % 6 === 0;
+
+        if (isReview) {
+          schedule.push({
+            day,
+            type: "Revisão",
+            subject: "Revisão",
+            topic: "Revisar resumos, Anki, questões erradas e caderno de erros."
+          });
+          continue;
+        }
+
+        const nonReviewIndex = day - 1 - Math.floor(day / 6);
+        const subject = subjects[nonReviewIndex % subjects.length];
+        const topic = getBaseTopic(subject, occurrenceCount[subject]);
+
+        occurrenceCount[subject] += 1;
+
+        schedule.push({
+          day,
+          type: "Matéria nova",
+          subject,
+          topic
+        });
+      }
+
+      return schedule;
+    }
+
+    const baseSchedule = generateBaseSchedule();
+
+    function normalizeRecords(records) {
+      const normalized = {};
+
+      Object.entries(records || {}).forEach(([day, record]) => {
+        const item = { ...record };
+
+        if (item.status == null) {
+          if (item.completed === true) {
+            item.status = "completed";
+          } else if (item.notFinished === true || item.unfinished === true) {
+            item.status = "unfinished";
+          }
+        }
+
+        if (item.status === "") {
+          delete item.status;
+        }
+
+        normalized[day] = item;
+      });
+
+      return normalized;
+    }
+
+    function loadState() {
+      const defaultState = {
+        currentDay: 1,
+        todayDay: 1,
+        records: {},
+        errors: []
+      };
+
+      try {
+        const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+
+        if (!saved) {
+          return defaultState;
+        }
+
+        return {
+          currentDay: clampDay(saved.currentDay || 1),
+          todayDay: clampDay(saved.todayDay || saved.currentDay || 1),
+          records: normalizeRecords(saved.records || {}),
+          errors: Array.isArray(saved.errors) ? saved.errors : []
+        };
+      } catch {
+        return defaultState;
+      }
+    }
+
+    let state = loadState();
+    let dynamicSchedule = [];
+
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function getRecord(day) {
+      return state.records[day] || {
+        pdf: false,
+        questionsTask: false,
+        anki: false,
+        errorReview: false,
+        questions: 0,
+        correct: 0
+      };
+    }
+
+    function computeDynamicSchedule() {
+      const subjectState = {};
+
+      subjects.forEach(subject => {
+        subjectState[subject] = {
+          basePointer: 0,
+          postponedQueue: [],
+          pendingTopic: null,
+          pendingSourceDay: null
+        };
+      });
+
+      return baseSchedule.map(base => {
+        const record = state.records[base.day] || {};
+        const status = record.status || null;
+
+        if (base.type === "Revisão") {
+          return {
+            ...base,
+            actualTopic: base.topic,
+            originalTopic: base.topic,
+            resumed: false,
+            fromPostponed: false,
+            postponedTopic: null,
+            pendingSourceDay: null,
+            status
+          };
+        }
+
+        const ss = subjectState[base.subject];
+
+        let actualTopic = "";
+        let resumed = false;
+        let fromPostponed = false;
+        let postponedTopic = null;
+        let pendingSourceDayForDisplay = null;
+
+        if (ss.pendingTopic) {
+          resumed = true;
+          actualTopic = ss.pendingTopic;
+          pendingSourceDayForDisplay = ss.pendingSourceDay;
+
+          postponedTopic = getBaseTopic(base.subject, ss.basePointer);
+          ss.postponedQueue.push(postponedTopic);
+          ss.basePointer += 1;
+
+          if (status === "unfinished") {
+            // Mantém o tópico pendente para o próximo dia da mesma matéria.
+          } else {
+            // Considera o tópico pendente como finalizado para projeção dos próximos dias.
+            ss.pendingTopic = null;
+            ss.pendingSourceDay = null;
+          }
+        } else {
+          if (ss.postponedQueue.length) {
+            actualTopic = ss.postponedQueue.shift();
+            fromPostponed = true;
+          } else {
+            actualTopic = getBaseTopic(base.subject, ss.basePointer);
+            ss.basePointer += 1;
+          }
+
+          if (status === "unfinished") {
+            ss.pendingTopic = actualTopic;
+            ss.pendingSourceDay = base.day;
+            pendingSourceDayForDisplay = base.day;
+          }
+        }
+
+        return {
+          ...base,
+          actualTopic,
+          originalTopic: base.topic,
+          resumed,
+          fromPostponed,
+          postponedTopic,
+          pendingSourceDay: pendingSourceDayForDisplay,
+          status
+        };
+      });
+    }
+
+    function showTab(tabId) {
+      document.querySelectorAll(".tab-content").forEach(section => {
+        section.classList.add("hidden");
+      });
+
+      document.getElementById(tabId).classList.remove("hidden");
+
+      document.querySelectorAll(".tab-button").forEach(button => {
+        button.classList.toggle("active", button.dataset.tab === tabId);
+      });
+    }
+
+    function renderGeneralProgress() {
+      const completed = Object.values(state.records).filter(record => record.status === "completed").length;
+      const percent = Math.round((completed / TOTAL_DAYS) * 100);
+
+      document.getElementById("generalProgress").style.width = `${percent}%`;
+      document.getElementById("generalProgressText").textContent = `${completed} de ${TOTAL_DAYS} dias concluídos`;
+    }
+
+    function collectForm() {
+      const questions = Math.max(0, Number(document.getElementById("questionsInput")?.value) || 0);
+      const correct = Math.min(
+        questions,
+        Math.max(0, Number(document.getElementById("correctInput")?.value) || 0)
+      );
+
+      return {
+        pdf: Boolean(document.getElementById("taskPdf")?.checked),
+        questionsTask: Boolean(document.getElementById("taskQuestions")?.checked),
+        anki: Boolean(document.getElementById("taskAnki")?.checked),
+        errorReview: Boolean(document.getElementById("taskErrors")?.checked),
+        questions,
+        correct
+      };
+    }
+
+    function saveCurrentDay(status) {
+      const day = clampDay(state.currentDay);
+      const existing = getRecord(day);
+      const form = collectForm();
+
+      const next = {
+        ...existing,
+        ...form
+      };
+
+      if (status !== undefined) {
+        if (status === null) {
+          delete next.status;
+        } else {
+          next.status = status;
+        }
+      }
+
+      state.records[day] = next;
+      state.currentDay = day;
+
+      saveState();
+      renderAll();
+    }
+
+    function renderAgenda() {
+      const day = clampDay(state.currentDay);
+      state.currentDay = day;
+
+      const item = dynamicSchedule[day - 1];
+      const record = getRecord(day);
+
+      document.getElementById("currentDayInput").value = day;
+
+      let alerts = "";
+
+      if (item.type === "Revisão") {
+        alerts += `<div class="alert alert-info">Dia de revisão: utilize este dia para consolidar o que foi estudado nos últimos 5 dias.</div>`;
+      }
+
+      if (item.resumed) {
+        alerts += `<div class="alert alert-warning">
+          Retomando tópico pendente${item.pendingSourceDay ? ` do dia ${item.pendingSourceDay}` : ""}.
+        </div>`;
+      }
+
+      if (item.postponedTopic) {
+        alerts += `<div class="alert alert-info">
+          O tópico originalmente previsto para este dia foi adiado: <strong>${escapeHtml(item.postponedTopic)}</strong>.
+        </div>`;
+      }
+
+      if (item.fromPostponed) {
+        alerts += `<div class="alert alert-info">
+          Este tópico estava adiado de um dia anterior.
+        </div>`;
+      }
+
+      if (record.status === "unfinished") {
+        alerts += `<div class="alert alert-warning">
+          Este dia está marcado como tópico não encerrado.
+        </div>`;
+      }
+
+      if (record.status === "completed") {
+        alerts += `<div class="alert alert-success">
+          Dia marcado como concluído.
+        </div>`;
+      }
+
+      const statusBadge = record.status === "completed"
+        ? `<span class="badge done">Concluído</span>`
+        : record.status === "unfinished"
+          ? `<span class="badge error">Não encerrado</span>`
+          : `<span class="badge">Pendente</span>`;
+
+      document.getElementById("agendaContent").innerHTML = `
+        <div class="card" style="box-shadow:none; margin-bottom:0;">
+          <p>
+            <span class="badge">Dia ${item.day}</span>
+            <span class="badge ${item.type === "Revisão" ? "review" : ""}">${escapeHtml(item.type)}</span>
+            ${state.todayDay === day ? '<span class="badge done">Hoje</span>' : ""}
+            ${statusBadge}
+          </p>
+
+          ${alerts}
+
+          <h3>${escapeHtml(item.subject)}</h3>
+
+          <p><strong>Tópico:</strong> ${escapeHtml(item.actualTopic)}</p>
+
+          ${
+            item.actualTopic !== item.originalTopic
+              ? `<p class="muted">Tópico originalmente previsto: ${escapeHtml(item.originalTopic)}</p>`
+              : ""
+          }
+
+          <div class="tasks">
+            <label class="task">
+              <input type="checkbox" id="taskPdf" ${record.pdf ? "checked" : ""} />
+              PDF ou teoria - 1h30
+            </label>
+
+            <label class="task">
+              <input type="checkbox" id="taskQuestions" ${record.questionsTask ? "checked" : ""} />
+              Questões - 45min
+            </label>
+
+            <label class="task">
+              <input type="checkbox" id="taskAnki" ${record.anki ? "checked" : ""} />
+              Anki - 30min
+            </label>
+
+            <label class="task">
+              <input type="checkbox" id="taskErrors" ${record.errorReview ? "checked" : ""} />
+              Caderno de Erros - 15min
+            </label>
+          </div>
+
+          <div class="grid grid-2">
+            <div>
+              <label for="questionsInput">Questões feitas</label>
+              <input type="number" id="questionsInput" min="0" value="${Number(record.questions) || 0}" />
+            </div>
+
+            <div>
+              <label for="correctInput">Acertos</label>
+              <input type="number" id="correctInput" min="0" value="${Number(record.correct) || 0}" />
+            </div>
+          </div>
+
+          <div style="margin-top:16px; display:flex; gap:10px; flex-wrap:wrap;">
+            <button type="button" id="saveDayBtn">Salvar atividades</button>
+            <button type="button" id="completeDayBtn" class="success">Concluir dia</button>
+            <button type="button" id="unfinishedDayBtn" class="danger">Tópico não encerrado</button>
+            <button type="button" id="clearStatusBtn" class="secondary">Limpar status</button>
+          </div>
+        </div>
+      `;
+
+      document.getElementById("saveDayBtn").addEventListener("click", () => saveCurrentDay(undefined));
+      document.getElementById("completeDayBtn").addEventListener("click", () => saveCurrentDay("completed"));
+      document.getElementById("unfinishedDayBtn").addEventListener("click", () => saveCurrentDay("unfinished"));
+      document.getElementById("clearStatusBtn").addEventListener("click", () => saveCurrentDay(null));
+    }
+
+    function aggregateStats() {
+      return subjects.map(subject => {
+        const days = baseSchedule.filter(item => item.subject === subject);
+
+        let questions = 0;
+        let correct = 0;
+        let completed = 0;
+        let unfinished = 0;
+
+        days.forEach(item => {
+          const record = state.records[item.day] || {};
+          const q = Math.max(0, Number(record.questions) || 0);
+          const c = Math.min(q, Math.max(0, Number(record.correct) || 0));
+
+          questions += q;
+          correct += c;
+
+          if (record.status === "completed") completed += 1;
+          if (record.status === "unfinished") unfinished += 1;
+        });
+
+        const errors = Math.max(0, questions - correct);
+        const percent = questions ? Math.round((correct / questions) * 100) : 0;
+        const totalDays = days.length;
+        const evolution = totalDays ? Math.round((completed / totalDays) * 100) : 0;
+
+        return {
+          subject,
+          questions,
+          correct,
+          errors,
+          percent,
+          completed,
+          unfinished,
+          totalDays,
+          evolution
+        };
+      });
+    }
+
+    function renderStats() {
+      const rows = aggregateStats();
+
+      const totalQuestions = rows.reduce((sum, item) => sum + item.questions, 0);
+      const totalCorrect = rows.reduce((sum, item) => sum + item.correct, 0);
+      const totalErrors = rows.reduce((sum, item) => sum + item.errors, 0);
+      const accuracy = totalQuestions ? Math.round((totalCorrect / totalQuestions) * 100) : 0;
+
+      const completedDays = Object.values(state.records).filter(record => record.status === "completed").length;
+      const unfinishedDays = Object.values(state.records).filter(record => record.status === "unfinished").length;
+
+      document.getElementById("statsCards").innerHTML = `
+        <div class="stat-card blue">
+          <span>Questões resolvidas</span>
+          <strong>${totalQuestions}</strong>
+        </div>
+
+        <div class="stat-card green">
+          <span>Percentual geral de acerto</span>
+          <strong>${accuracy}%</strong>
+        </div>
+
+        <div class="stat-card red">
+          <span>Erros registrados</span>
+          <strong>${totalErrors}</strong>
+        </div>
+
+        <div class="stat-card yellow">
+          <span>Dias não encerrados</span>
+          <strong>${unfinishedDays}</strong>
+        </div>
+      `;
+
+      document.getElementById("statsTableBody").innerHTML = rows.map(item => {
+        const accuracyColor = item.percent >= 70
+          ? "#16a34a"
+          : item.percent >= 50
+            ? "#d97706"
+            : "#dc2626";
+
+        return `
+          <tr>
+            <td><strong>${escapeHtml(item.subject)}</strong></td>
+            <td>${item.questions}</td>
+            <td>${item.correct}</td>
+            <td>${item.errors}</td>
+            <td>
+              <div class="mini-progress">
+                <div style="width:${item.percent}%; background:${accuracyColor};"></div>
+              </div>
+              ${item.percent}%
+            </td>
+            <td>${item.completed}/${item.totalDays}</td>
+            <td>${item.unfinished}</td>
+            <td>
+              <div class="progress-wrap">
+                <div class="progress-bar" style="width:${item.evolution}%"></div>
+              </div>
+              <small class="muted">${item.evolution}% concluído</small>
+            </td>
+          </tr>
+        `;
+      }).join("");
+
+      const worst = rows.slice().sort((a, b) => b.errors - a.errors)[0];
+      const lowestAccuracy = rows
+        .filter(item => item.questions > 0)
+        .sort((a, b) => a.percent - b.percent)[0];
+
+      let note = "Sem dados suficientes para análise.";
+
+      if (worst && worst.errors > 0 && lowestAccuracy) {
+        note = `
+          Maior volume de erros: <strong>${escapeHtml(worst.subject)}</strong>, com ${worst.errors} erros.
+          <br />
+          Menor percentual de acerto: <strong>${escapeHtml(lowestAccuracy.subject)}</strong>, com ${lowestAccuracy.percent}%.
+        `;
+      }
+
+      document.getElementById("statsNote").innerHTML = note;
+    }
+
+    function populateSubjectSelects() {
+      const subjectOptions = subjects
+        .map(subject => `<option value="${escapeHtml(subject)}">${escapeHtml(subject)}</option>`)
+        .join("");
+
+      document.getElementById("errorSubject").innerHTML = subjectOptions;
+
+      document.getElementById("errorFilter").innerHTML = `
+        <option value="all">Todas as matérias</option>
+        ${subjectOptions}
+      `;
+    }
+
+    function addError() {
+      const subject = document.getElementById("errorSubject").value;
+      const topic = document.getElementById("errorTopic").value.trim();
+      const note = document.getElementById("errorNote").value.trim();
+
+      if (!subject || !topic || !note) {
+        alert("Preencha matéria, tópico e explicação antes de adicionar.");
+        return;
+      }
+
+      state.errors.unshift({
+        id: Date.now(),
+        subject,
+        topic,
+        note,
+        createdAt: new Date().toISOString()
+      });
+
+      document.getElementById("errorTopic").value = "";
+      document.getElementById("errorNote").value = "";
+
+      saveState();
+      renderErrors();
+    }
+
+    function renderErrors() {
+      const filter = document.getElementById("errorFilter").value;
+      const list = document.getElementById("errorsList");
+
+      const filtered = state.errors.filter(item => {
+        return filter === "all" || item.subject === filter;
+      });
+
+      if (!filtered.length) {
+        list.innerHTML = `<p class="muted">Nenhum registro encontrado para o filtro selecionado.</p>`;
+        return;
+      }
+
+      list.innerHTML = filtered.map(item => `
+        <article class="error-item">
+          <h4>${escapeHtml(item.subject)}</h4>
+          <p><strong>Tópico:</strong> ${escapeHtml(item.topic)}</p>
+          <p>${escapeHtml(item.note)}</p>
+          <small class="muted">Registrado em ${new Date(item.createdAt).toLocaleString("pt-BR")}</small>
+          <div style="margin-top:10px;">
+            <button type="button" class="danger delete-error-btn" data-id="${item.id}">Excluir</button>
+          </div>
+        </article>
+      `).join("");
+    }
+
+    function deleteError(id) {
+      state.errors = state.errors.filter(item => String(item.id) !== String(id));
+      saveState();
+      renderErrors();
+    }
+
+    function renderSchedule() {
+      document.getElementById("scheduleTableBody").innerHTML = dynamicSchedule.map(item => {
+        const record = getRecord(item.day);
+        const statusValue = record.status || "";
+
+        let topicHtml = `
+          <div class="topic-cell">
+            ${escapeHtml(item.actualTopic)}
+            ${item.resumed ? `<small>Retomando tópico pendente${item.pendingSourceDay ? ` do dia ${item.pendingSourceDay}` : ""}.</small>` : ""}
+            ${item.fromPostponed ? `<small>Tópico adiado de um dia anterior.</small>` : ""}
+            ${item.postponedTopic ? `<small>Tópico originalmente previsto e adiado: ${escapeHtml(item.postponedTopic)}.</small>` : ""}
+          </div>
+        `;
+
+        return `
+          <tr class="${item.day === state.currentDay ? "current-day" : ""}">
+            <td>${item.day}</td>
+            <td>
+              <span class="badge ${item.type === "Revisão" ? "review" : ""}">
+                ${escapeHtml(item.type)}
+              </span>
+            </td>
+            <td>${escapeHtml(item.subject)}</td>
+            <td>${topicHtml}</td>
+            <td>
+              <select class="status-select" data-day="${item.day}">
+                <option value="" ${statusValue === "" ? "selected" : ""}>Pendente</option>
+                <option value="completed" ${statusValue === "completed" ? "selected" : ""}>Concluído</option>
+                <option value="unfinished" ${statusValue === "unfinished" ? "selected" : ""}>Não encerrado</option>
+              </select>
+            </td>
+          </tr>
+        `;
+      }).join("");
+    }
+
+    function renderAll() {
+      dynamicSchedule = computeDynamicSchedule();
+
+      renderGeneralProgress();
+      renderAgenda();
+      renderStats();
+      renderErrors();
+      renderSchedule();
+    }
+
+    function exportBackup() {
+      const payload = {
+        app: "TCE-RJ 2027 - Cronograma de Estudos",
+        version: 4,
+        exportedAt: new Date().toISOString(),
+        state
+      };
+
+      const blob = new Blob([JSON.stringify(payload, null, 2)], {
+        type: "application/json"
+      });
+
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+
+      link.href = url;
+      link.download = `backup-tce-rj-2027-${new Date().toISOString().slice(0, 10)}.json`;
+      link.click();
+
+      URL.revokeObjectURL(url);
+    }
+
+    function normalizeImportedState(raw) {
+      const importedState = raw?.state || raw || {};
+
+      return {
+        currentDay: clampDay(importedState.currentDay || 1),
+        todayDay: clampDay(importedState.todayDay || importedState.currentDay || 1),
+        records: normalizeRecords(importedState.records || {}),
+        errors: Array.isArray(importedState.errors)
+          ? importedState.errors.map((item, index) => ({
+              id: item.id || Date.now() + index,
+              subject: item.subject || "",
+              topic: item.topic || "",
+              note: item.note || "",
+              createdAt: item.createdAt || new Date().toISOString()
+            }))
+          : []
+      };
+    }
+
+    function importBackup(file) {
+      if (!file) return;
+
+      const reader = new FileReader();
+
+      reader.onload = event => {
+        try {
+          const parsed = JSON.parse(event.target.result);
+          const nextState = normalizeImportedState(parsed);
+
+          if (!confirm("Importar este backup substituirá os dados atuais. Deseja continuar?")) {
+            return;
+          }
+
+          state = nextState;
+          saveState();
+          renderAll();
+
+          alert("Backup importado com sucesso.");
+        } catch {
+          alert("Não foi possível importar o backup. Verifique se o arquivo é um JSON válido.");
+        }
+      };
+
+      reader.readAsText(file);
+    }
+
+    function resetStats() {
+      if (!confirm("Tem certeza que deseja resetar todas as estatísticas? O caderno de erros será mantido.")) {
+        return;
+      }
+
+      state.records = {};
+      saveState();
+      renderAll();
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      populateSubjectSelects();
+
+      document.querySelectorAll(".tab-button").forEach(button => {
+        button.addEventListener("click", () => {
+          showTab(button.dataset.tab);
+        });
+      });
+
+      document.getElementById("prevDayBtn").addEventListener("click", () => {
+        state.currentDay = clampDay(Number(state.currentDay) - 1);
+        saveState();
+        renderAll();
+      });
+
+      document.getElementById("nextDayBtn").addEventListener("click", () => {
+        state.currentDay = clampDay(Number(state.currentDay) + 1);
+        saveState();
+        renderAll();
+      });
+
+      document.getElementById("goDayBtn").addEventListener("click", () => {
+        state.currentDay = clampDay(document.getElementById("currentDayInput").value);
+        saveState();
+        renderAll();
+      });
+
+      document.getElementById("markTodayBtn").addEventListener("click", () => {
+        state.todayDay = clampDay(state.currentDay);
+        saveState();
+        renderAll();
+      });
+
+      document.getElementById("addErrorBtn").addEventListener("click", addError);
+
+      document.getElementById("errorFilter").addEventListener("change", () => {
+        renderErrors();
+      });
+
+      document.getElementById("errorsList").addEventListener("click", event => {
+        if (event.target.classList.contains("delete-error-btn")) {
+          deleteError(event.target.dataset.id);
+        }
+      });
+
+      document.getElementById("scheduleTableBody").addEventListener("change", event => {
+        if (!event.target.classList.contains("status-select")) return;
+
+        const day = clampDay(event.target.dataset.day);
+        const value = event.target.value || null;
+
+        const existing = getRecord(day);
+
+        const next = {
+          ...existing
+        };
+
+        if (value === null) {
+          delete next.status;
+        } else {
+          next.status = value;
+        }
+
+        state.records[day] = next;
+
+        saveState();
+        renderAll();
+      });
+
+      document.getElementById("exportBackupBtn").addEventListener("click", exportBackup);
+
+      document.getElementById("backupInput").addEventListener("change", event => {
+        importBackup(event.target.files[0]);
+        event.target.value = "";
+      });
+
+      document.getElementById("resetStatsBtn").addEventListener("click", resetStats);
+
+      renderAll();
+    });
+  </script>
 </body>
 </html>
