@@ -1,64 +1,1499 @@
-Em Copilot Studio muda uma coisa importante em relação ao Agent Builder: a ferramenta REST API exige especificação OpenAPI v2 (Swagger). Se você subir o v3, o Power Platform tenta converter automaticamente — e é justamente aí que a conversão costuma falhar. Gerei então a versão 2.0 do mesmo contrato.
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TCE-RJ 2027 - Cronograma de Estudos</title>
 
-Em Copilot Studio há uma exigência que não existia no Agent Builder: a ferramenta REST API precisa de especificação OpenAPI v2 (Swagger). Se você enviar v3, o Power Platform tenta converter para v2 automaticamente — e é justamente nessa conversão que a validação costuma quebrar. citeturn6search70turn6search48 Por isso gerei a versão 2.0 do contrato, já validada.
+  <style>
+    :root {
+      --bg: #f4f6f8;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --primary: #1d4ed8;
+      --primary-dark: #1e40af;
+      --border: #d1d5db;
+      --success: #15803d;
+      --danger: #b91c1c;
+      --warning: #b45309;
+      --soft-blue: #eff6ff;
+      --soft-green: #ecfdf5;
+      --soft-red: #fef2f2;
+      --soft-yellow: #fffbeb;
+      --shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+      --radius: 14px;
+    }
 
-1.json
+    * {
+      box-sizing: border-box;
+    }
 
-Caminho recomendado: ferramenta REST API
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+    }
 
-É o mais direto, porque a API do PNCP é pública e sem autenticação.
+    header {
+      background: linear-gradient(135deg, #1d4ed8, #0f172a);
+      color: #ffffff;
+      padding: 28px 20px;
+      text-align: center;
+    }
 
-1. Criar a ferramenta
+    header h1 {
+      margin: 0 0 8px;
+      font-size: 1.9rem;
+    }
 
-Em copilotstudio.microsoft.com → seu agente → aba Tools → Add a tool → New tool → REST API. citeturn6search67
+    header p {
+      margin: 0;
+      color: #dbeafe;
+    }
 
-2. Enviar a especificação
+    main {
+      max-width: 1180px;
+      margin: 24px auto;
+      padding: 0 16px 40px;
+    }
 
-Arraste o arquivo JSON acima. A tela não aceita colar URL nem texto — exige o arquivo. citeturn6search54
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 20px;
+      margin-bottom: 20px;
+    }
 
-3. Autenticação
+    .top-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
 
-Selecione No authentication. A API do PNCP não exige credencial. citeturn6search48
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 0;
+    }
 
-4. Selecionar as operações
+    button,
+    .file-label {
+      border: 0;
+      background: var(--primary);
+      color: #ffffff;
+      padding: 10px 14px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 700;
+      transition: 0.2s;
+      font-size: 0.95rem;
+      display: inline-block;
+      text-align: center;
+    }
 
-Marque as seis:
+    button:hover,
+    .file-label:hover {
+      background: var(--primary-dark);
+    }
 
-Operação	Item do ETPConsultarItensPCA	1 — recorrência da necessidade
-ConsultarContratacoesPorPublicacao	5 — núcleo do levantamento
-ConsultarContratacoesComPropostaAberta	5 — especificações atuais
-DetalharContratacao	citação nominal
-ConsultarAtasPorVigencia	5 e 7
-ConsultarContratosPorPublicacao	7 — estimativa de valor
+    button.secondary {
+      background: #475569;
+    }
 
-5. Instruções
+    button.secondary:hover {
+      background: #334155;
+    }
 
-Cole o conteúdo do instrucoes_agente_etp_pncp.md (do turno anterior) em Settings → Instructions. Mantenha a generative orchestration ativa — é ela que faz o agente escolher a ferramenta certa a partir da conversa. citeturn6search67
+    button.danger {
+      background: var(--danger);
+    }
 
-6. Publicar
+    button.danger:hover {
+      background: #991b1b;
+    }
 
-Sem publicar, a ferramenta não fica disponível fora do painel de teste.
+    button.success {
+      background: var(--success);
+    }
 
-Por que as descrições do arquivo são longas
+    button.success:hover {
+      background: #166534;
+    }
 
-Não é redundância. O orquestrador generativo lê literalmente summary, description e as descrições de parâmetro para decidir se aciona a ferramenta e como preenche os argumentos a partir da conversa. citeturn6search52
+    button.active {
+      background: #0f172a;
+    }
 
-Por isso cada description no arquivo já carrega a regra de negócio — inclusive a advertência, dentro da própria operação de PCA, de que ela não deve ser usada para indicar solução. Isso reforça a sua regra do subitem 6.1 em duas camadas: nas instruções do agente e no contrato da ferramenta.
+    input,
+    select,
+    textarea {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px;
+      font-size: 1rem;
+      background: #ffffff;
+      color: var(--text);
+    }
 
-Alternativa: Custom Connector
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
 
-Vale se você quiser reaproveitar a integração em vários agentes ou em fluxos do Power Automate. O conector é escopado por ambiente e pode ser compartilhado na organização, o que a ferramenta REST API não oferece. citeturn6search66turn6search69
+    label {
+      display: block;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
 
-Caminho: Tools → Add a tool → New tool → Custom connector, o que leva ao portal do Power Apps. Em Security, escolha No authentication. citeturn6search66turn6search51
+    .grid {
+      display: grid;
+      gap: 16px;
+    }
 
-Um aviso prático: há relatos de o Copilot Studio continuar solicitando credenciais em conectores configurados como No authentication, exibindo mensagem de "open connection manager". citeturn6search53 Se isso ocorrer, a ferramenta REST API é o contorno mais rápido.
+    .grid-2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
 
-Três pontos de atenção para o seu caso
+    .grid-3 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
 
-Volume de resultados degrada a resposta. Retornar centenas de registros causa atraso significativo na resposta do agente. citeturn6search69 Com tamanhoPagina em 50 e a necessidade de paginar várias janelas mensais para varrer 24 meses, uma única pergunta sobre "firewall" pode disparar dezenas de chamadas. Comece com janelas curtas nos testes.
+    .grid-4 {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
 
-Se precisar de lógica, use um Agent Flow. Chamar a API direto tem menos latência, mas joga tratamento de erro e transformação para o próprio agente — que não é bom lugar para isso. Um fluxo do Power Automate dá try-catch, retry e transformação de payload em local testável e versionável em solução gerenciada. citeturn6search52
+    .stat-card {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px;
+      background: #ffffff;
+    }
 
-No seu caso, o fluxo é a escolha certa para a rotina de varredura com filtro por palavra-chave e deduplicação por numeroControlePNCP — exatamente a lógica que a API não oferece nativamente.
+    .stat-card strong {
+      display: block;
+      font-size: 1.8rem;
+      margin-top: 4px;
+    }
 
-Nomes de parâmetros de /v1/atas e /v1/contratos. Continuam inferidos por analogia, como sinalizei antes. Teste essas duas operações primeiro no painel do Copilot Studio; se retornarem 400, ajuste no arquivo e reenvie.
+    .stat-card span {
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .stat-card.blue {
+      background: var(--soft-blue);
+    }
+
+    .stat-card.green {
+      background: var(--soft-green);
+    }
+
+    .stat-card.red {
+      background: var(--soft-red);
+    }
+
+    .stat-card.yellow {
+      background: var(--soft-yellow);
+    }
+
+    .progress-wrap {
+      background: #e5e7eb;
+      border-radius: 999px;
+      height: 12px;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      background: var(--primary);
+      height: 100%;
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    .mini-progress {
+      background: #e5e7eb;
+      border-radius: 999px;
+      height: 8px;
+      overflow: hidden;
+      margin-bottom: 5px;
+    }
+
+    .mini-progress > div {
+      height: 100%;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 14px;
+      background: #ffffff;
+    }
+
+    th,
+    td {
+      padding: 12px;
+      border-bottom: 1px solid var(--border);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: #f8fafc;
+      font-size: 0.9rem;
+      color: #334155;
+    }
+
+    tr:hover td {
+      background: #f9fafb;
+    }
+
+    tr.current-day td {
+      background: #eff6ff;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 9px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      background: #e0e7ff;
+      color: #3730a3;
+      margin-right: 6px;
+      margin-bottom: 4px;
+    }
+
+    .badge.done {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .badge.review {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .badge.error {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .muted {
+      color: var(--muted);
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .day-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: end;
+      margin-bottom: 16px;
+    }
+
+    .day-controls > div {
+      min-width: 140px;
+    }
+
+    .tasks {
+      display: grid;
+      gap: 10px;
+      margin: 16px 0;
+    }
+
+    .task {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      padding: 12px;
+      border-radius: 10px;
+      font-weight: 400;
+      margin-bottom: 0;
+    }
+
+    .task input {
+      width: auto;
+    }
+
+    .error-item {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 12px;
+      background: #ffffff;
+    }
+
+    .error-item h4 {
+      margin: 0 0 8px;
+    }
+
+    .backup-area {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+
+    #backupInput {
+      display: none;
+    }
+
+    .alert {
+      padding: 10px 12px;
+      border-radius: 10px;
+      margin-bottom: 10px;
+      border: 1px solid transparent;
+    }
+
+    .alert-warning {
+      background: #fffbeb;
+      border-color: #fcd34d;
+      color: #92400e;
+    }
+
+    .alert-info {
+      background: #eff6ff;
+      border-color: #bfdbfe;
+      color: #1e40af;
+    }
+
+    .alert-success {
+      background: #ecfdf5;
+      border-color: #bbf7d0;
+      color: #166534;
+    }
+
+    .status-select {
+      min-width: 160px;
+    }
+
+    .topic-cell small {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+    }
+
+    .stats-note {
+      margin-top: 14px;
+      padding: 12px;
+      border-radius: 10px;
+      background: #f8fafc;
+      border: 1px solid var(--border);
+    }
+
+    @media (max-width: 800px) {
+      .grid-2,
+      .grid-3,
+      .grid-4 {
+        grid-template-columns: 1fr;
+      }
+
+      header h1 {
+        font-size: 1.45rem;
+      }
+
+      button,
+      .file-label {
+        width: 100%;
+      }
+
+      .tabs button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>TCE-RJ 2027 - Auditor de Controle Externo</h1>
+    <p>3h por dia | 30 questões por dia | 360 dias | Revisão a cada 6 dias</p>
+  </header>
+
+  <main>
+    <section class="card">
+      <div class="top-actions">
+        <div>
+          <strong>Progresso geral</strong>
+          <div class="progress-wrap" style="margin-top:8px; width:260px; max-width:100%;">
+            <div id="generalProgress" class="progress-bar"></div>
+          </div>
+          <small id="generalProgressText" class="muted">0 de 360 dias concluídos</small>
+        </div>
+
+        <div class="backup-area">
+          <button type="button" id="exportBackupBtn" class="secondary">Exportar backup</button>
+          <label for="backupInput" class="file-label">Importar backup</label>
+          <input type="file" id="backupInput" accept="application/json" />
+        </div>
+      </div>
+
+      <nav class="tabs" aria-label="Menu principal">
+        <button type="button" class="tab-button active" data-tab="agenda">Agenda do Dia</button>
+        <button type="button" class="tab-button" data-tab="stats">Estatísticas</button>
+        <button type="button" class="tab-button" data-tab="errors">Caderno de Erros</button>
+        <button type="button" class="tab-button" data-tab="schedule">Cronograma Completo</button>
+      </nav>
+    </section>
+
+    <section id="agenda" class="card tab-content">
+      <h2>Agenda do Dia</h2>
+
+      <div class="day-controls">
+        <button type="button" id="prevDayBtn" class="secondary">Dia anterior</button>
+
+        <div>
+          <label for="currentDayInput">Dia</label>
+          <input type="number" id="currentDayInput" min="1" max="360" value="1" />
+        </div>
+
+        <button type="button" id="goDayBtn">Ir</button>
+        <button type="button" id="nextDayBtn" class="secondary">Próximo dia</button>
+        <button type="button" id="markTodayBtn" class="success">Marcar como hoje</button>
+      </div>
+
+      <div id="agendaContent"></div>
+    </section>
+
+    <section id="stats" class="card tab-content hidden">
+      <h2>Estatísticas Gerais por Matéria</h2>
+      <p class="muted">
+        O quadro abaixo consolida questões, acertos, erros, percentual de acerto, dias concluídos,
+        dias não encerrados e evolução por matéria.
+      </p>
+
+      <div class="grid grid-4" id="statsCards"></div>
+
+      <h3>Detalhamento por Matéria</h3>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Matéria</th>
+              <th>Questões</th>
+              <th>Acertos</th>
+              <th>Erros</th>
+              <th>% Acerto</th>
+              <th>Concluídos</th>
+              <th>Não encerrados</th>
+              <th>Evolução</th>
+            </tr>
+          </thead>
+          <tbody id="statsTableBody"></tbody>
+        </table>
+      </div>
+
+      <div class="stats-note" id="statsNote"></div>
+
+      <div style="margin-top:16px;">
+        <button type="button" id="resetStatsBtn" class="danger">Resetar todas as estatísticas</button>
+      </div>
+    </section>
+
+    <section id="errors" class="card tab-content hidden">
+      <h2>Caderno de Erros</h2>
+      <p class="muted">
+        Registre os conceitos errados, macetes e pontos fracos. Revise sempre nos dias de revisão,
+        a cada 6 dias.
+      </p>
+
+      <div class="grid grid-3">
+        <div>
+          <label for="errorSubject">Matéria</label>
+          <select id="errorSubject"></select>
+        </div>
+
+        <div>
+          <label for="errorTopic">Tópico ou observação</label>
+          <input type="text" id="errorTopic" placeholder="Ex.: Controle externo, competência, prazos..." />
+        </div>
+
+        <div>
+          <label for="errorFilter">Filtrar por matéria</label>
+          <select id="errorFilter">
+            <option value="all">Todas as matérias</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="margin-top:14px;">
+        <label for="errorNote">Explicação ou o que aprendi</label>
+        <textarea id="errorNote" placeholder="Escreva aqui a correção, explicação, macete ou ponto de atenção."></textarea>
+      </div>
+
+      <div style="margin-top:14px;">
+        <button type="button" id="addErrorBtn">Adicionar ao caderno</button>
+      </div>
+
+      <h3>Registros salvos</h3>
+      <div id="errorsList"></div>
+    </section>
+
+    <section id="schedule" class="card tab-content hidden">
+      <h2>Cronograma de 360 Dias</h2>
+      <p class="muted">
+        Estrutura: a cada 6 dias, são 5 dias de matéria nova e 1 dia de revisão.
+      </p>
+      <p class="muted">
+        Eixos diários: PDF 1h30, questões 45min, Anki 30min e Caderno de Erros 15min.
+      </p>
+      <p class="muted">
+        Use a coluna Status para marcar Concluído ou Não encerrado. Quando um tópico não for encerrado,
+        ele será retomado no próximo dia da mesma matéria e o tópico previsto será adiado.
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Dia</th>
+              <th>Tipo</th>
+              <th>Matéria</th>
+              <th>Tópico</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="scheduleTableBody"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const STORAGE_KEY = "tcerj2027_state_v4";
+    const TOTAL_DAYS = 360;
+
+    const subjects = [
+      "Controle Externo",
+      "Direito Constitucional",
+      "Direito Administrativo",
+      "Administração Financeira e Orçamentária",
+      "Contabilidade Pública",
+      "Auditoria Governamental",
+      "Português",
+      "Raciocínio Lógico",
+      "Administração Pública",
+      "Tecnologia da Informação"
+    ];
+
+    const topicMap = {
+      "Controle Externo": [
+        "Controle da Administração Pública: conceito, abrangência e espécies",
+        "Controle externo e controle interno: diferenças, integração e competências",
+        "Tribunais de Contas: natureza, composição, competências e jurisdição",
+        "Fiscalização contábil, financeira, orçamentária, operacional e patrimonial",
+        "Tomada e prestação de contas",
+        "Jurisprudência, súmulas e entendimentos aplicáveis ao controle externo"
+      ],
+      "Direito Constitucional": [
+        "Princípios fundamentais",
+        "Direitos e garantias fundamentais",
+        "Organização do Estado",
+        "Administração pública na Constituição",
+        "Controle de constitucionalidade"
+      ],
+      "Direito Administrativo": [
+        "Atos administrativos",
+        "Poderes administrativos",
+        "Licitações e contratos",
+        "Servidores públicos",
+        "Responsabilidade civil do Estado"
+      ],
+      "Administração Financeira e Orçamentária": [
+        "Orçamento público",
+        "Princípios orçamentários",
+        "Receita pública",
+        "Despesa pública",
+        "Lei de Responsabilidade Fiscal"
+      ],
+      "Contabilidade Pública": [
+        "Patrimônio público",
+        "Plano de contas aplicado ao setor público",
+        "Demonstrações contábeis",
+        "Variações patrimoniais",
+        "NBC TSP"
+      ],
+      "Auditoria Governamental": [
+        "Normas de auditoria",
+        "Planejamento de auditoria",
+        "Evidências e papéis de trabalho",
+        "Relatório de auditoria",
+        "Auditoria operacional"
+      ],
+      "Português": [
+        "Interpretação de textos",
+        "Morfologia",
+        "Sintaxe",
+        "Pontuação",
+        "Coesão e coerência"
+      ],
+      "Raciocínio Lógico": [
+        "Proposições",
+        "Argumentação lógica",
+        "Conjuntos",
+        "Probabilidade",
+        "Análise combinatória"
+      ],
+      "Administração Pública": [
+        "Modelos de administração pública",
+        "Governança",
+        "Gestão por resultados",
+        "Planejamento estratégico",
+        "Processos organizacionais"
+      ],
+      "Tecnologia da Informação": [
+        "Segurança da informação",
+        "Banco de dados",
+        "Redes de computadores",
+        "Excel e ferramentas de escritório",
+        "Governança de TI"
+      ]
+    };
+
+    function clampDay(value) {
+      const day = Number(value);
+      if (Number.isNaN(day)) return 1;
+      return Math.min(TOTAL_DAYS, Math.max(1, day));
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function getBaseTopic(subject, index) {
+      const topics = topicMap[subject] || [];
+      if (!topics.length) {
+        return `Tópico ${index + 1}`;
+      }
+      return topics[index % topics.length];
+    }
+
+    function generateBaseSchedule() {
+      const schedule = [];
+      const occurrenceCount = {};
+
+      subjects.forEach(subject => {
+        occurrenceCount[subject] = 0;
+      });
+
+      for (let day = 1; day <= TOTAL_DAYS; day++) {
+        const isReview = day % 6 === 0;
+
+        if (isReview) {
+          schedule.push({
+            day,
+            type: "Revisão",
+            subject: "Revisão",
+            topic: "Revisar resumos, Anki, questões erradas e caderno de erros."
+          });
+          continue;
+        }
+
+        const nonReviewIndex = day - 1 - Math.floor(day / 6);
+        const subject = subjects[nonReviewIndex % subjects.length];
+        const topic = getBaseTopic(subject, occurrenceCount[subject]);
+
+        occurrenceCount[subject] += 1;
+
+        schedule.push({
+          day,
+          type: "Matéria nova",
+          subject,
+          topic
+        });
+      }
+
+      return schedule;
+    }
+
+    const baseSchedule = generateBaseSchedule();
+
+    function normalizeRecords(records) {
+      const normalized = {};
+
+      Object.entries(records || {}).forEach(([day, record]) => {
+        const item = { ...record };
+
+        if (item.status == null) {
+          if (item.completed === true) {
+            item.status = "completed";
+          } else if (item.notFinished === true || item.unfinished === true) {
+            item.status = "unfinished";
+          }
+        }
+
+        if (item.status === "") {
+          delete item.status;
+        }
+
+        normalized[day] = item;
+      });
+
+      return normalized;
+    }
+
+    function loadState() {
+      const defaultState = {
+        currentDay: 1,
+        todayDay: 1,
+        records: {},
+        errors: []
+      };
+
+      try {
+        const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+
+        if (!saved) {
+          return defaultState;
+        }
+
+        return {
+          currentDay: clampDay(saved.currentDay || 1),
+          todayDay: clampDay(saved.todayDay || saved.currentDay || 1),
+          records: normalizeRecords(saved.records || {}),
+          errors: Array.isArray(saved.errors) ? saved.errors : []
+        };
+      } catch {
+        return defaultState;
+      }
+    }
+
+    let state = loadState();
+    let dynamicSchedule = [];
+
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function getRecord(day) {
+      return state.records[day] || {
+        pdf: false,
+        questionsTask: false,
+        anki: false,
+        errorReview: false,
+        questions: 0,
+        correct: 0
+      };
+    }
+
+    function computeDynamicSchedule() {
+      const subjectState = {};
+
+      subjects.forEach(subject => {
+        subjectState[subject] = {
+          basePointer: 0,
+          postponedQueue: [],
+          pendingTopic: null,
+          pendingSourceDay: null
+        };
+      });
+
+      return baseSchedule.map(base => {
+        const record = state.records[base.day] || {};
+        const status = record.status || null;
+
+        if (base.type === "Revisão") {
+          return {
+            ...base,
+            actualTopic: base.topic,
+            originalTopic: base.topic,
+            resumed: false,
+            fromPostponed: false,
+            postponedTopic: null,
+            pendingSourceDay: null,
+            status
+          };
+        }
+
+        const ss = subjectState[base.subject];
+
+        let actualTopic = "";
+        let resumed = false;
+        let fromPostponed = false;
+        let postponedTopic = null;
+        let pendingSourceDayForDisplay = null;
+
+        if (ss.pendingTopic) {
+          resumed = true;
+          actualTopic = ss.pendingTopic;
+          pendingSourceDayForDisplay = ss.pendingSourceDay;
+
+          postponedTopic = getBaseTopic(base.subject, ss.basePointer);
+          ss.postponedQueue.push(postponedTopic);
+          ss.basePointer += 1;
+
+          if (status === "unfinished") {
+            // Mantém o tópico pendente para o próximo dia da mesma matéria.
+          } else {
+            // Considera o tópico pendente como finalizado para projeção dos próximos dias.
+            ss.pendingTopic = null;
+            ss.pendingSourceDay = null;
+          }
+        } else {
+          if (ss.postponedQueue.length) {
+            actualTopic = ss.postponedQueue.shift();
+            fromPostponed = true;
+          } else {
+            actualTopic = getBaseTopic(base.subject, ss.basePointer);
+            ss.basePointer += 1;
+          }
+
+          if (status === "unfinished") {
+            ss.pendingTopic = actualTopic;
+            ss.pendingSourceDay = base.day;
+            pendingSourceDayForDisplay = base.day;
+          }
+        }
+
+        return {
+          ...base,
+          actualTopic,
+          originalTopic: base.topic,
+          resumed,
+          fromPostponed,
+          postponedTopic,
+          pendingSourceDay: pendingSourceDayForDisplay,
+          status
+        };
+      });
+    }
+
+    function showTab(tabId) {
+      document.querySelectorAll(".tab-content").forEach(section => {
+        section.classList.add("hidden");
+      });
+
+      document.getElementById(tabId).classList.remove("hidden");
+
+      document.querySelectorAll(".tab-button").forEach(button => {
+        button.classList.toggle("active", button.dataset.tab === tabId);
+      });
+    }
+
+    function renderGeneralProgress() {
+      const completed = Object.values(state.records).filter(record => record.status === "completed").length;
+      const percent = Math.round((completed / TOTAL_DAYS) * 100);
+
+      document.getElementById("generalProgress").style.width = `${percent}%`;
+      document.getElementById("generalProgressText").textContent = `${completed} de ${TOTAL_DAYS} dias concluídos`;
+    }
+
+    function collectForm() {
+      const questions = Math.max(0, Number(document.getElementById("questionsInput")?.value) || 0);
+      const correct = Math.min(
+        questions,
+        Math.max(0, Number(document.getElementById("correctInput")?.value) || 0)
+      );
+
+      return {
+        pdf: Boolean(document.getElementById("taskPdf")?.checked),
+        questionsTask: Boolean(document.getElementById("taskQuestions")?.checked),
+        anki: Boolean(document.getElementById("taskAnki")?.checked),
+        errorReview: Boolean(document.getElementById("taskErrors")?.checked),
+        questions,
+        correct
+      };
+    }
+
+   function saveCurrentDay(status) {
+      const day = clampDay(state.currentDay);
+      const existing = getRecord(day);
+      const form = collectForm();
+
+      const next = {
+        ...existing,
+        ...form
+      };
+
+      if (status !== undefined) {
+        if (status === null) {
+          delete next.status;
+        } else {
+          next.status = status;
+        }
+      }
+
+      state.records[day] = next;
+      state.currentDay = day;
+
+      saveState();
+      renderAll();
+
+      // --- INÍCIO DO CÓDIGO QUE ENVIA PARA O GOOGLE SHEETS ---
+      const itemAgenda = dynamicSchedule[day - 1]; 
+
+      // Organiza os dados que serão enviados
+      const dadosParaEnviar = {
+        dia: day,
+        materia: itemAgenda.subject,
+        topico: itemAgenda.actualTopic,
+        status: next.status === "completed" ? "Concluído" : (next.status === "unfinished" ? "Não encerrado" : "Pendente"),
+        pdf: next.pdf ? "Sim" : "Não",
+        questoesTask: next.questionsTask ? "Sim" : "Não",
+        anki: next.anki ? "Sim" : "Não",
+        errorReview: next.errorReview ? "Sim" : "Não",
+        questoes: next.questions,
+        acertos: next.correct
+      };
+
+      // ATENÇÃO: Substitua o texto abaixo pelo link que você copiou no Passo 3
+      const urlParaSheets = "https://script.google.com/macros/s/AKfycbyODazfcXuufuCoRd9C7JCSw9eGbK5UsNqnf-42JZ2m4aPzj_OKi-MmkHx3Q0Kni4rv/exec"; 
+
+      // Envia os dados para a planilha silenciosamente no fundo
+      fetch(urlParaSheets, {
+        method: 'POST',
+        body: JSON.stringify(dadosParaEnviar)
+      }).then(() => {
+        console.log("Salvo no Google Sheets com sucesso!");
+      }).catch(erro => {
+        console.error("Erro ao salvar na planilha:", erro);
+      });
+      // --- FIM DO CÓDIGO DO GOOGLE SHEETS ---
+    }
+
+    function renderAgenda() {
+      const day = clampDay(state.currentDay);
+      state.currentDay = day;
+
+      const item = dynamicSchedule[day - 1];
+      const record = getRecord(day);
+
+      document.getElementById("currentDayInput").value = day;
+
+      let alerts = "";
+
+      if (item.type === "Revisão") {
+        alerts += `<div class="alert alert-info">Dia de revisão: utilize este dia para consolidar o que foi estudado nos últimos 5 dias.</div>`;
+      }
+
+      if (item.resumed) {
+        alerts += `<div class="alert alert-warning">
+          Retomando tópico pendente${item.pendingSourceDay ? ` do dia ${item.pendingSourceDay}` : ""}.
+        </div>`;
+      }
+
+      if (item.postponedTopic) {
+        alerts += `<div class="alert alert-info">
+          O tópico originalmente previsto para este dia foi adiado: <strong>${escapeHtml(item.postponedTopic)}</strong>.
+        </div>`;
+      }
+
+      if (item.fromPostponed) {
+        alerts += `<div class="alert alert-info">
+          Este tópico estava adiado de um dia anterior.
+        </div>`;
+      }
+
+      if (record.status === "unfinished") {
+        alerts += `<div class="alert alert-warning">
+          Este dia está marcado como tópico não encerrado.
+        </div>`;
+      }
+
+      if (record.status === "completed") {
+        alerts += `<div class="alert alert-success">
+          Dia marcado como concluído.
+        </div>`;
+      }
+
+      const statusBadge = record.status === "completed"
+        ? `<span class="badge done">Concluído</span>`
+        : record.status === "unfinished"
+          ? `<span class="badge error">Não encerrado</span>`
+          : `<span class="badge">Pendente</span>`;
+
+      document.getElementById("agendaContent").innerHTML = `
+        <div class="card" style="box-shadow:none; margin-bottom:0;">
+          <p>
+            <span class="badge">Dia ${item.day}</span>
+            <span class="badge ${item.type === "Revisão" ? "review" : ""}">${escapeHtml(item.type)}</span>
+            ${state.todayDay === day ? '<span class="badge done">Hoje</span>' : ""}
+            ${statusBadge}
+          </p>
+
+          ${alerts}
+
+          <h3>${escapeHtml(item.subject)}</h3>
+
+          <p><strong>Tópico:</strong> ${escapeHtml(item.actualTopic)}</p>
+
+          ${
+            item.actualTopic !== item.originalTopic
+              ? `<p class="muted">Tópico originalmente previsto: ${escapeHtml(item.originalTopic)}</p>`
+              : ""
+          }
+
+          <div class="tasks">
+            <label class="task">
+              <input type="checkbox" id="taskPdf" ${record.pdf ? "checked" : ""} />
+              PDF ou teoria - 1h30
+            </label>
+
+            <label class="task">
+              <input type="checkbox" id="taskQuestions" ${record.questionsTask ? "checked" : ""} />
+              Questões - 45min
+            </label>
+
+            <label class="task">
+              <input type="checkbox" id="taskAnki" ${record.anki ? "checked" : ""} />
+              Anki - 30min
+            </label>
+
+            <label class="task">
+              <input type="checkbox" id="taskErrors" ${record.errorReview ? "checked" : ""} />
+              Caderno de Erros - 15min
+            </label>
+          </div>
+
+          <div class="grid grid-2">
+            <div>
+              <label for="questionsInput">Questões feitas</label>
+              <input type="number" id="questionsInput" min="0" value="${Number(record.questions) || 0}" />
+            </div>
+
+            <div>
+              <label for="correctInput">Acertos</label>
+              <input type="number" id="correctInput" min="0" value="${Number(record.correct) || 0}" />
+            </div>
+          </div>
+
+          <div style="margin-top:16px; display:flex; gap:10px; flex-wrap:wrap;">
+            <button type="button" id="saveDayBtn">Salvar atividades</button>
+            <button type="button" id="completeDayBtn" class="success">Concluir dia</button>
+            <button type="button" id="unfinishedDayBtn" class="danger">Tópico não encerrado</button>
+            <button type="button" id="clearStatusBtn" class="secondary">Limpar status</button>
+          </div>
+        </div>
+      `;
+
+      document.getElementById("saveDayBtn").addEventListener("click", () => saveCurrentDay(undefined));
+      document.getElementById("completeDayBtn").addEventListener("click", () => saveCurrentDay("completed"));
+      document.getElementById("unfinishedDayBtn").addEventListener("click", () => saveCurrentDay("unfinished"));
+      document.getElementById("clearStatusBtn").addEventListener("click", () => saveCurrentDay(null));
+    }
+
+    function aggregateStats() {
+      return subjects.map(subject => {
+        const days = baseSchedule.filter(item => item.subject === subject);
+
+        let questions = 0;
+        let correct = 0;
+        let completed = 0;
+        let unfinished = 0;
+
+        days.forEach(item => {
+          const record = state.records[item.day] || {};
+          const q = Math.max(0, Number(record.questions) || 0);
+          const c = Math.min(q, Math.max(0, Number(record.correct) || 0));
+
+          questions += q;
+          correct += c;
+
+          if (record.status === "completed") completed += 1;
+          if (record.status === "unfinished") unfinished += 1;
+        });
+
+        const errors = Math.max(0, questions - correct);
+        const percent = questions ? Math.round((correct / questions) * 100) : 0;
+        const totalDays = days.length;
+        const evolution = totalDays ? Math.round((completed / totalDays) * 100) : 0;
+
+        return {
+          subject,
+          questions,
+          correct,
+          errors,
+          percent,
+          completed,
+          unfinished,
+          totalDays,
+          evolution
+        };
+      });
+    }
+
+    function renderStats() {
+      const rows = aggregateStats();
+
+      const totalQuestions = rows.reduce((sum, item) => sum + item.questions, 0);
+      const totalCorrect = rows.reduce((sum, item) => sum + item.correct, 0);
+      const totalErrors = rows.reduce((sum, item) => sum + item.errors, 0);
+      const accuracy = totalQuestions ? Math.round((totalCorrect / totalQuestions) * 100) : 0;
+
+      const completedDays = Object.values(state.records).filter(record => record.status === "completed").length;
+      const unfinishedDays = Object.values(state.records).filter(record => record.status === "unfinished").length;
+
+      document.getElementById("statsCards").innerHTML = `
+        <div class="stat-card blue">
+          <span>Questões resolvidas</span>
+          <strong>${totalQuestions}</strong>
+        </div>
+
+        <div class="stat-card green">
+          <span>Percentual geral de acerto</span>
+          <strong>${accuracy}%</strong>
+        </div>
+
+        <div class="stat-card red">
+          <span>Erros registrados</span>
+          <strong>${totalErrors}</strong>
+        </div>
+
+        <div class="stat-card yellow">
+          <span>Dias não encerrados</span>
+          <strong>${unfinishedDays}</strong>
+        </div>
+      `;
+
+      document.getElementById("statsTableBody").innerHTML = rows.map(item => {
+        const accuracyColor = item.percent >= 70
+          ? "#16a34a"
+          : item.percent >= 50
+            ? "#d97706"
+            : "#dc2626";
+
+        return `
+          <tr>
+            <td><strong>${escapeHtml(item.subject)}</strong></td>
+            <td>${item.questions}</td>
+            <td>${item.correct}</td>
+            <td>${item.errors}</td>
+            <td>
+              <div class="mini-progress">
+                <div style="width:${item.percent}%; background:${accuracyColor};"></div>
+              </div>
+              ${item.percent}%
+            </td>
+            <td>${item.completed}/${item.totalDays}</td>
+            <td>${item.unfinished}</td>
+            <td>
+              <div class="progress-wrap">
+                <div class="progress-bar" style="width:${item.evolution}%"></div>
+              </div>
+              <small class="muted">${item.evolution}% concluído</small>
+            </td>
+          </tr>
+        `;
+      }).join("");
+
+      const worst = rows.slice().sort((a, b) => b.errors - a.errors)[0];
+      const lowestAccuracy = rows
+        .filter(item => item.questions > 0)
+        .sort((a, b) => a.percent - b.percent)[0];
+
+      let note = "Sem dados suficientes para análise.";
+
+      if (worst && worst.errors > 0 && lowestAccuracy) {
+        note = `
+          Maior volume de erros: <strong>${escapeHtml(worst.subject)}</strong>, com ${worst.errors} erros.
+          <br />
+          Menor percentual de acerto: <strong>${escapeHtml(lowestAccuracy.subject)}</strong>, com ${lowestAccuracy.percent}%.
+        `;
+      }
+
+      document.getElementById("statsNote").innerHTML = note;
+    }
+
+    function populateSubjectSelects() {
+      const subjectOptions = subjects
+        .map(subject => `<option value="${escapeHtml(subject)}">${escapeHtml(subject)}</option>`)
+        .join("");
+
+      document.getElementById("errorSubject").innerHTML = subjectOptions;
+
+      document.getElementById("errorFilter").innerHTML = `
+        <option value="all">Todas as matérias</option>
+        ${subjectOptions}
+      `;
+    }
+
+    function addError() {
+      const subject = document.getElementById("errorSubject").value;
+      const topic = document.getElementById("errorTopic").value.trim();
+      const note = document.getElementById("errorNote").value.trim();
+
+      if (!subject || !topic || !note) {
+        alert("Preencha matéria, tópico e explicação antes de adicionar.");
+        return;
+      }
+
+      state.errors.unshift({
+        id: Date.now(),
+        subject,
+        topic,
+        note,
+        createdAt: new Date().toISOString()
+      });
+
+      document.getElementById("errorTopic").value = "";
+      document.getElementById("errorNote").value = "";
+
+      saveState();
+      renderErrors();
+    }
+
+    function renderErrors() {
+      const filter = document.getElementById("errorFilter").value;
+      const list = document.getElementById("errorsList");
+
+      const filtered = state.errors.filter(item => {
+        return filter === "all" || item.subject === filter;
+      });
+
+      if (!filtered.length) {
+        list.innerHTML = `<p class="muted">Nenhum registro encontrado para o filtro selecionado.</p>`;
+        return;
+      }
+
+      list.innerHTML = filtered.map(item => `
+        <article class="error-item">
+          <h4>${escapeHtml(item.subject)}</h4>
+          <p><strong>Tópico:</strong> ${escapeHtml(item.topic)}</p>
+          <p>${escapeHtml(item.note)}</p>
+          <small class="muted">Registrado em ${new Date(item.createdAt).toLocaleString("pt-BR")}</small>
+          <div style="margin-top:10px;">
+            <button type="button" class="danger delete-error-btn" data-id="${item.id}">Excluir</button>
+          </div>
+        </article>
+      `).join("");
+    }
+
+    function deleteError(id) {
+      state.errors = state.errors.filter(item => String(item.id) !== String(id));
+      saveState();
+      renderErrors();
+    }
+
+    function renderSchedule() {
+      document.getElementById("scheduleTableBody").innerHTML = dynamicSchedule.map(item => {
+        const record = getRecord(item.day);
+        const statusValue = record.status || "";
+
+        let topicHtml = `
+          <div class="topic-cell">
+            ${escapeHtml(item.actualTopic)}
+            ${item.resumed ? `<small>Retomando tópico pendente${item.pendingSourceDay ? ` do dia ${item.pendingSourceDay}` : ""}.</small>` : ""}
+            ${item.fromPostponed ? `<small>Tópico adiado de um dia anterior.</small>` : ""}
+            ${item.postponedTopic ? `<small>Tópico originalmente previsto e adiado: ${escapeHtml(item.postponedTopic)}.</small>` : ""}
+          </div>
+        `;
+
+        return `
+          <tr class="${item.day === state.currentDay ? "current-day" : ""}">
+            <td>${item.day}</td>
+            <td>
+              <span class="badge ${item.type === "Revisão" ? "review" : ""}">
+                ${escapeHtml(item.type)}
+              </span>
+            </td>
+            <td>${escapeHtml(item.subject)}</td>
+            <td>${topicHtml}</td>
+            <td>
+              <select class="status-select" data-day="${item.day}">
+                <option value="" ${statusValue === "" ? "selected" : ""}>Pendente</option>
+                <option value="completed" ${statusValue === "completed" ? "selected" : ""}>Concluído</option>
+                <option value="unfinished" ${statusValue === "unfinished" ? "selected" : ""}>Não encerrado</option>
+              </select>
+            </td>
+          </tr>
+        `;
+      }).join("");
+    }
+
+    function renderAll() {
+      dynamicSchedule = computeDynamicSchedule();
+
+      renderGeneralProgress();
+      renderAgenda();
+      renderStats();
+      renderErrors();
+      renderSchedule();
+    }
+
+    function exportBackup() {
+      const payload = {
+        app: "TCE-RJ 2027 - Cronograma de Estudos",
+        version: 4,
+        exportedAt: new Date().toISOString(),
+        state
+      };
+
+      const blob = new Blob([JSON.stringify(payload, null, 2)], {
+        type: "application/json"
+      });
+
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+
+      link.href = url;
+      link.download = `backup-tce-rj-2027-${new Date().toISOString().slice(0, 10)}.json`;
+      link.click();
+
+      URL.revokeObjectURL(url);
+    }
+
+    function normalizeImportedState(raw) {
+      const importedState = raw?.state || raw || {};
+
+      return {
+        currentDay: clampDay(importedState.currentDay || 1),
+        todayDay: clampDay(importedState.todayDay || importedState.currentDay || 1),
+        records: normalizeRecords(importedState.records || {}),
+        errors: Array.isArray(importedState.errors)
+          ? importedState.errors.map((item, index) => ({
+              id: item.id || Date.now() + index,
+              subject: item.subject || "",
+              topic: item.topic || "",
+              note: item.note || "",
+              createdAt: item.createdAt || new Date().toISOString()
+            }))
+          : []
+      };
+    }
+
+    function importBackup(file) {
+      if (!file) return;
+
+      const reader = new FileReader();
+
+      reader.onload = event => {
+        try {
+          const parsed = JSON.parse(event.target.result);
+          const nextState = normalizeImportedState(parsed);
+
+          if (!confirm("Importar este backup substituirá os dados atuais. Deseja continuar?")) {
+            return;
+          }
+
+          state = nextState;
+          saveState();
+          renderAll();
+
+          alert("Backup importado com sucesso.");
+        } catch {
+          alert("Não foi possível importar o backup. Verifique se o arquivo é um JSON válido.");
+        }
+      };
+
+      reader.readAsText(file);
+    }
+
+    function resetStats() {
+      if (!confirm("Tem certeza que deseja resetar todas as estatísticas? O caderno de erros será mantido.")) {
+        return;
+      }
+
+      state.records = {};
+      saveState();
+      renderAll();
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      populateSubjectSelects();
+
+      document.querySelectorAll(".tab-button").forEach(button => {
+        button.addEventListener("click", () => {
+          showTab(button.dataset.tab);
+        });
+      });
+
+      document.getElementById("prevDayBtn").addEventListener("click", () => {
+        state.currentDay = clampDay(Number(state.currentDay) - 1);
+        saveState();
+        renderAll();
+      });
+
+      document.getElementById("nextDayBtn").addEventListener("click", () => {
+        state.currentDay = clampDay(Number(state.currentDay) + 1);
+        saveState();
+        renderAll();
+      });
+
+      document.getElementById("goDayBtn").addEventListener("click", () => {
+        state.currentDay = clampDay(document.getElementById("currentDayInput").value);
+        saveState();
+        renderAll();
+      });
+
+      document.getElementById("markTodayBtn").addEventListener("click", () => {
+        state.todayDay = clampDay(state.currentDay);
+        saveState();
+        renderAll();
+      });
+
+      document.getElementById("addErrorBtn").addEventListener("click", addError);
+
+      document.getElementById("errorFilter").addEventListener("change", () => {
+        renderErrors();
+      });
+
+      document.getElementById("errorsList").addEventListener("click", event => {
+        if (event.target.classList.contains("delete-error-btn")) {
+          deleteError(event.target.dataset.id);
+        }
+      });
+
+      document.getElementById("scheduleTableBody").addEventListener("change", event => {
+        if (!event.target.classList.contains("status-select")) return;
+
+        const day = clampDay(event.target.dataset.day);
+        const value = event.target.value || null;
+
+        const existing = getRecord(day);
+
+        const next = {
+          ...existing
+        };
+
+        if (value === null) {
+          delete next.status;
+        } else {
+          next.status = value;
+        }
+
+        state.records[day] = next;
+
+        saveState();
+        renderAll();
+      });
+
+      document.getElementById("exportBackupBtn").addEventListener("click", exportBackup);
+
+      document.getElementById("backupInput").addEventListener("change", event => {
+        importBackup(event.target.files[0]);
+        event.target.value = "";
+      });
+
+      document.getElementById("resetStatsBtn").addEventListener("click", resetStats);
+
+      renderAll();
+    });
+  </script>
+</body>
+</html>
