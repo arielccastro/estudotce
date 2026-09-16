@@ -25,6 +25,25 @@
   }
   header h1 { font-size: 1.8em; margin-bottom: 5px; }
   header p { font-size: 0.95em; opacity: 0.9; }
+  
+  /* Streak / Ofensiva */
+  .streak-bar {
+    background: linear-gradient(90deg, #ff6b35, #f7931e);
+    color: white;
+    padding: 15px 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  }
+  .streak-item { text-align: center; }
+  .streak-item .value { font-size: 1.8em; font-weight: bold; }
+  .streak-item .label { font-size: 0.85em; opacity: 0.95; }
+  
   .progress-container {
     background: #fff;
     padding: 20px;
@@ -130,6 +149,64 @@
   }
   .topic-list li.review { border-left-color: #ffc107; }
   .topic-list li strong { color: #0055a5; }
+  
+  /* Checkboxes dos eixos */
+  .eixos-container {
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 15px;
+    border: 1px solid #e0e0e0;
+  }
+  .eixos-container h4 {
+    color: #003366;
+    margin-bottom: 10px;
+    font-size: 1em;
+  }
+  .eixos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 10px;
+  }
+  .eixo-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .eixo-item:hover { background: #e7f3ff; }
+  .eixo-item input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    accent-color: #28a745;
+  }
+  .eixo-item label {
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.9em;
+    flex: 1;
+  }
+  .eixo-item .tempo {
+    color: #666;
+    font-size: 0.8em;
+    font-weight: normal;
+  }
+  .eixo-item.checked {
+    background: #d4edda;
+    border-left: 3px solid #28a745;
+  }
+  .eixo-progress {
+    margin-top: 10px;
+    text-align: center;
+    font-weight: 600;
+    color: #003366;
+  }
+  
   table {
     width: 100%;
     border-collapse: collapse;
@@ -201,8 +278,247 @@
     cursor: pointer;
     margin-top: 10px;
   }
+  .filters-container {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    border: 1px solid #e0e0e0;
+  }
+  .filters-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .filters-grid label {
+    display: block;
+    font-size: 0.85em;
+    font-weight: 600;
+    color: #555;
+    margin-bottom: 4px;
+  }
+  .filters-grid input, .filters-grid select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-family: inherit;
+    font-size: 0.9em;
+  }
+  .filters-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .filters-actions button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 600;
+  }
+  .btn-apply { background: #0055a5; color: white; }
+  .btn-clear { background: #6c757d; color: white; }
+  .total-info {
+    background: #e7f3ff;
+    padding: 10px 15px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    border-left: 4px solid #0055a5;
+    font-weight: 600;
+    color: #003366;
+  }
+  
+  /* Calendar Heatmap */
+  .heatmap-container {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    overflow-x: auto;
+  }
+  .heatmap-title {
+    font-size: 1.1em;
+    font-weight: bold;
+    color: #003366;
+    margin-bottom: 15px;
+  }
+  .heatmap-legend {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 15px;
+    font-size: 0.85em;
+    color: #666;
+    flex-wrap: wrap;
+  }
+  .heatmap-legend .cell-sample {
+    width: 14px;
+    height: 14px;
+    border-radius: 2px;
+    display: inline-block;
+  }
+  .heatmap-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 16px);
+    gap: 3px;
+    width: fit-content;
+  }
+  .heatmap-cell {
+    width: 16px;
+    height: 16px;
+    border-radius: 2px;
+    background: #ebedf0;
+    cursor: pointer;
+    transition: transform 0.1s;
+    position: relative;
+  }
+  .heatmap-cell:hover {
+    transform: scale(1.3);
+    z-index: 10;
+  }
+  .heatmap-cell.concluido { background: #28a745; }
+  .heatmap-cell.nao-encerrado { background: #ffc107; }
+  .heatmap-cell.pendente { background: #ebedf0; }
+  .heatmap-cell.futuro { background: #d1d5db; }
+  .heatmap-cell[data-tooltip]:hover::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 120%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #333;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.75em;
+    white-space: nowrap;
+    z-index: 100;
+  }
+  .heatmap-weekdays {
+    display: grid;
+    grid-template-columns: repeat(6, 16px);
+    gap: 3px;
+    margin-bottom: 5px;
+    font-size: 0.7em;
+    color: #666;
+    width: fit-content;
+  }
+  .heatmap-weekdays span { text-align: center; }
+  
+  /* Medalhas */
+  .medals-section {
+    margin-top: 20px;
+  }
+  .medals-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 15px;
+    margin-top: 15px;
+  }
+  .medal {
+    background: #f8f9fa;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    padding: 15px 10px;
+    text-align: center;
+    transition: all 0.3s;
+    position: relative;
+  }
+  .medal.unlocked {
+    background: linear-gradient(135deg, #fff8e1, #ffecb3);
+    border-color: #f7931e;
+    box-shadow: 0 4px 8px rgba(247, 147, 30, 0.3);
+  }
+  .medal.locked {
+    opacity: 0.5;
+    filter: grayscale(100%);
+  }
+  .medal-icon {
+    font-size: 2.5em;
+    margin-bottom: 5px;
+  }
+  .medal-name {
+    font-weight: bold;
+    font-size: 0.85em;
+    color: #003366;
+    margin-bottom: 3px;
+  }
+  .medal-desc {
+    font-size: 0.75em;
+    color: #666;
+  }
+  .medal.new-unlock {
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+  }
+  
+  /* Questões por assunto */
+  .questoes-section {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 2px solid #e0e0e0;
+  }
+  .questoes-section h3 {
+    color: #003366;
+    margin-bottom: 15px;
+  }
+  .questoes-form {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 15px;
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+  }
+  .questoes-form label {
+    display: block;
+    font-size: 0.85em;
+    font-weight: 600;
+    color: #555;
+    margin-bottom: 4px;
+  }
+  .questoes-form input, .questoes-form select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-family: inherit;
+  }
+  .questoes-form .full-width { grid-column: 1 / -1; }
+  .questoes-summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 10px;
+    margin-bottom: 15px;
+  }
+  .questoes-summary-card {
+    background: #f8f9fa;
+    padding: 12px;
+    border-radius: 8px;
+    text-align: center;
+    border-left: 4px solid #0055a5;
+  }
+  .questoes-summary-card h5 {
+    font-size: 0.8em;
+    color: #666;
+    margin-bottom: 5px;
+  }
+  .questoes-summary-card .value {
+    font-size: 1.4em;
+    font-weight: bold;
+    color: #003366;
+  }
+  .questoes-summary-card.acerto { border-left-color: #28a745; }
+  .questoes-summary-card.erro { border-left-color: #dc3545; }
+  
   @media (max-width: 768px) {
-    .caderno-form { grid-template-columns: 1fr; }
+    .caderno-form, .questoes-form { grid-template-columns: 1fr; }
     .agenda-nav { flex-direction: column; align-items: stretch; }
   }
 </style>
@@ -210,46 +526,118 @@
 <body>
 <div class="container">
   <header>
-    <h1>TCE-RJ 2027 - Cronograma de Estudos</h1>
+    <h1>🎯 TCE-RJ 2027 - Cronograma de Estudos</h1>
     <p>Analista de Controle Externo - Especialidade: Controle Externo</p>
-    <p>3h por dia | 30 questões por dia | 360 dias | Sistema de Ciclos</p>
+    <p>3h por dia | 30 questões por dia | Sistema de Ciclos (6 dias)</p>
   </header>
+
+  <!-- Barra de Ofensiva -->
+  <div class="streak-bar">
+    <div class="streak-item">
+      <div class="value" id="streakAtual">0 🔥</div>
+      <div class="label">Ofensiva Atual</div>
+    </div>
+    <div class="streak-item">
+      <div class="value" id="streakRecorde">0 🏆</div>
+      <div class="label">Recorde</div>
+    </div>
+    <div class="streak-item">
+      <div class="value" id="ciclosCompletos">0 🔄</div>
+      <div class="label">Ciclos Completos</div>
+    </div>
+    <div class="streak-item">
+      <div class="value" id="medalhasCount">0 🏅</div>
+      <div class="label">Medalhas</div>
+    </div>
+  </div>
 
   <div class="progress-container">
     <strong>Progresso geral</strong>
     <div class="progress-bar">
-      <div class="progress-fill" id="progressFill">0 de 360 dias concluídos</div>
+      <div class="progress-fill" id="progressFill">0 de 0 dias concluídos</div>
     </div>
   </div>
 
   <div class="tabs">
-    <button class="tab active" onclick="showTab('agenda')">Agenda do Dia</button>
-    <button class="tab" onclick="showTab('estatisticas')">Estatísticas</button>
-    <button class="tab" onclick="showTab('caderno')">Caderno de Erros</button>
-    <button class="tab" onclick="showTab('cronograma')">Cronograma Completo</button>
+    <button class="tab active" onclick="showTab('agenda', event)">📅 Agenda do Dia</button>
+    <button class="tab" onclick="showTab('estatisticas', event)">📊 Estatísticas</button>
+    <button class="tab" onclick="showTab('caderno', event)">📓 Caderno de Erros</button>
+    <button class="tab" onclick="showTab('cronograma', event)">📋 Cronograma</button>
+    <button class="tab" onclick="showTab('heatmap', event)">🔥 Heatmap</button>
+    <button class="tab" onclick="showTab('medalhas', event)">🏅 Medalhas</button>
   </div>
 
+  <!-- AGENDA DO DIA -->
   <div id="agenda" class="content active">
     <h2>Agenda do Dia</h2>
     <div class="agenda-nav">
       <button onclick="changeDay(-1)">Dia anterior</button>
-      <span>Dia <input type="number" id="dayInput" min="1" max="360" value="1" onchange="goToDay()"> de 360</span>
+      <span>Dia <input type="number" id="dayInput" min="1" value="1" onchange="goToDay()"> de <span id="totalDaysLabel">0</span></span>
       <button onclick="changeDay(1)">Próximo dia</button>
       <button onclick="markToday()">Marcar como hoje</button>
     </div>
     <div id="dayContent"></div>
   </div>
 
+  <!-- ESTATÍSTICAS -->
   <div id="estatisticas" class="content">
     <h2>Estatísticas Gerais por Matéria</h2>
-    <p style="margin-bottom:15px; color:#666;">O quadro abaixo consolida questões, acertos, erros, percentual de acerto, dias concluídos e evolução por matéria.</p>
+    <p style="margin-bottom:15px; color:#666;">Consolida dias concluídos, não encerrados e evolução por matéria.</p>
     <div id="statsTable"></div>
     <button class="btn-reset" onclick="resetStats()">Resetar todas as estatísticas</button>
+
+    <!-- Subseção: Questões por Assunto -->
+    <div class="questoes-section">
+      <h3>📝 Desempenho em Questões por Assunto</h3>
+      <p style="margin-bottom:15px; color:#666; font-size:0.9em;">
+        Registre o resultado das questões por assunto. Um mesmo assunto pode ser registrado em dias diferentes (dia previsto, revisão ou dia extra de conteúdo não encerrado).
+      </p>
+      
+      <div class="questoes-summary" id="questoesSummary"></div>
+      
+      <div class="questoes-form">
+        <div>
+          <label>Matéria</label>
+          <select id="qMateria" onchange="updateAssuntosSelect()">
+            <option value="">Selecione</option>
+          </select>
+        </div>
+        <div>
+          <label>Assunto / Tópico</label>
+          <select id="qAssunto">
+            <option value="">Selecione a matéria primeiro</option>
+          </select>
+        </div>
+        <div>
+          <label>Dia do cronograma</label>
+          <input type="number" id="qDia" min="1" placeholder="Ex: 15">
+        </div>
+        <div>
+          <label>Questões feitas</label>
+          <input type="number" id="qFeitas" min="1" placeholder="Ex: 10">
+        </div>
+        <div>
+          <label>Acertos</label>
+          <input type="number" id="qAcertos" min="0" placeholder="Ex: 8">
+        </div>
+        <div>
+          <label>Erros</label>
+          <input type="number" id="qErros" min="0" placeholder="Ex: 2">
+        </div>
+        <div class="full-width">
+          <button class="btn-add" onclick="addQuestao()" style="margin-top:5px;">➕ Registrar questões</button>
+        </div>
+      </div>
+      
+      <h4 style="margin-top:20px; color:#003366;">Registros por Assunto</h4>
+      <div id="questoesList"></div>
+    </div>
   </div>
 
+  <!-- CADERNO DE ERROS -->
   <div id="caderno" class="content">
     <h2>Caderno de Erros</h2>
-    <p style="margin-bottom:15px; color:#666;">Registre os conceitos errados, macetes e pontos fracos. Revise sempre nos dias de revisão.</p>
+    <p style="margin-bottom:15px; color:#666;">Registre conceitos errados, macetes e pontos fracos.</p>
     <div class="caderno-form">
       <select id="cadernoMateria">
         <option value="">Selecione a matéria</option>
@@ -261,10 +649,51 @@
     <div id="cadernoList"></div>
   </div>
 
+  <!-- CRONOGRAMA -->
   <div id="cronograma" class="content">
-    <h2>Cronograma de 360 Dias (Sistema de Ciclos)</h2>
-    <p style="margin-bottom:10px;">Estrutura: Ciclos de 6 dias. 5 dias de matérias específicas + 1 dia de revisão do ciclo.</p>
+    <h2>Cronograma Completo</h2>
+    <p style="margin-bottom:10px;">Estrutura: Ciclos de 6 dias. 5 dias de matérias + 1 dia de revisão.</p>
     <p style="margin-bottom:15px; font-weight:bold; color:#0055a5;">Ciclo 1: LP, Cont, DA, AnDados, CE | Ciclo 2: DC, AFO, AP, AG, Lic</p>
+    <div class="total-info" id="totalInfo">Total de dias: 0</div>
+
+    <div class="filters-container">
+      <div class="filters-grid">
+        <div>
+          <label>Dia (número)</label>
+          <input type="number" id="filterDia" placeholder="Ex: 15" min="1">
+        </div>
+        <div>
+          <label>Tipo</label>
+          <select id="filterTipo">
+            <option value="">Todos</option>
+            <option value="Nova">Nova</option>
+            <option value="Revisão">Revisão</option>
+          </select>
+        </div>
+        <div>
+          <label>Matéria</label>
+          <select id="filterMateria"><option value="">Todas</option></select>
+        </div>
+        <div>
+          <label>Tópico (busca)</label>
+          <input type="text" id="filterTopico" placeholder="Buscar...">
+        </div>
+        <div>
+          <label>Status</label>
+          <select id="filterStatus">
+            <option value="">Todos</option>
+            <option value="Pendente">Pendente</option>
+            <option value="Concluído">Concluído</option>
+            <option value="Não encerrado">Não encerrado</option>
+          </select>
+        </div>
+      </div>
+      <div class="filters-actions">
+        <button class="btn-apply" onclick="applyFilters()">Aplicar filtros</button>
+        <button class="btn-clear" onclick="clearFilters()">Limpar filtros</button>
+      </div>
+    </div>
+
     <table id="cronogramaTable">
       <thead>
         <tr>
@@ -277,6 +706,59 @@
       </thead>
       <tbody></tbody>
     </table>
+  </div>
+
+  <!-- HEATMAP -->
+  <div id="heatmap" class="content">
+    <h2>🔥 Calendar Heatmap (Ofensiva)</h2>
+    <p style="margin-bottom:15px; color:#666;">
+      Visualização estilo Duolingo/GitHub. Cada célula = 1 dia de estudo (domingos excluídos). 
+      Mantenha a ofensiva diária para desbloquear medalhas!
+    </p>
+    <div class="heatmap-container">
+      <div class="heatmap-title">Últimos 365 dias de estudo</div>
+      <div class="heatmap-weekdays">
+        <span>Seg</span><span>Ter</span><span>Qua</span><span>Qui</span><span>Sex</span><span>Sáb</span>
+      </div>
+      <div class="heatmap-grid" id="heatmapGrid"></div>
+      <div class="heatmap-legend">
+        <span>Legenda:</span>
+        <span class="cell-sample" style="background:#28a745;"></span> Concluído
+        <span class="cell-sample" style="background:#ffc107;"></span> Não encerrado
+        <span class="cell-sample" style="background:#ebedf0;"></span> Pendente
+        <span class="cell-sample" style="background:#d1d5db;"></span> Futuro
+      </div>
+    </div>
+    <div class="heatmap-container">
+      <div class="heatmap-title">📊 Resumo da Ofensiva</div>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <h4>Ofensiva Atual</h4>
+          <p id="heatStreakAtual">0 🔥</p>
+        </div>
+        <div class="stat-card">
+          <h4>Maior Ofensiva</h4>
+          <p id="heatStreakRecorde">0 🏆</p>
+        </div>
+        <div class="stat-card">
+          <h4>Total de dias concluídos</h4>
+          <p id="heatTotalConcluidos">0</p>
+        </div>
+        <div class="stat-card">
+          <h4>Taxa de conclusão</h4>
+          <p id="heatTaxa">0%</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MEDALHAS -->
+  <div id="medalhas" class="content">
+    <h2>🏅 Medalhas e Conquistas</h2>
+    <p style="margin-bottom:15px; color:#666;">
+      Desbloqueie medalhas conforme avança nos estudos. Cada conquista representa um marco importante na sua preparação!
+    </p>
+    <div class="medals-grid" id="medalsGrid"></div>
   </div>
 </div>
 
@@ -391,75 +873,106 @@
     ]
   };
 
-  // Definição dos Ciclos
   const ciclo1 = ["Língua Portuguesa", "Contabilidade Pública", "Direito Administrativo", "Análise de Dados e Informações", "Controle Externo"];
   const ciclo2 = ["Direito Constitucional", "Administração Financeira e Orçamentária", "Administração Pública", "Auditoria Governamental", "Licitações, Contratos e Convênios"];
 
-  // Estado da aplicação
+  // Definição das Medalhas
+  const MEDALHAS_DEF = [
+    { id: "primeiro_passo", nome: "Primeiro Passo", icon: "👶", desc: "Conclua seu primeiro dia", check: (d) => d.concluidos >= 1 },
+    { id: "semana_firme", nome: "Semana Firme", icon: "📅", desc: "Ofensiva de 7 dias", check: (d) => d.streakRecorde >= 7 },
+    { id: "quinzena", nome: "Quinzena de Ouro", icon: "🌟", desc: "Ofensiva de 15 dias", check: (d) => d.streakRecorde >= 15 },
+    { id: "mes_completo", nome: "Mês Completo", icon: "🗓️", desc: "Ofensiva de 30 dias", check: (d) => d.streakRecorde >= 30 },
+    { id: "dois_meses", nome: "Dois Meses de Foco", icon: "💪", desc: "Ofensiva de 60 dias", check: (d) => d.streakRecorde >= 60 },
+    { id: "cem_dias", nome: "Centenário", icon: "💯", desc: "Ofensiva de 100 dias", check: (d) => d.streakRecorde >= 100 },
+    { id: "ciclo1", nome: "Ciclo 1 Completo", icon: "🥉", desc: "Complete o Ciclo 1 inteiro", check: (d) => d.ciclosCompletos >= 1 },
+    { id: "ciclo2", nome: "Ciclo 2 Completo", icon: "🥈", desc: "Complete o Ciclo 2 inteiro", check: (d) => d.ciclosCompletos >= 2 },
+    { id: "dupla_conquista", nome: "Dupla Conquista", icon: "🥇", desc: "Complete Ciclo 1 + Ciclo 2", check: (d) => d.ciclosCompletos >= 2 },
+    { id: "dez_ciclos", nome: "Mestre dos Ciclos", icon: "👑", desc: "Complete 10 ciclos", check: (d) => d.ciclosCompletos >= 10 },
+    { id: "cinquenta_dias", nome: "Meio Centenário", icon: "🎯", desc: "Conclua 50 dias no total", check: (d) => d.concluidos >= 50 },
+    { id: "cem_dias_total", nome: "Maratona de 100", icon: "🏃", desc: "Conclua 100 dias no total", check: (d) => d.concluidos >= 100 },
+    { id: "duzentos_dias", nome: "Persistência Total", icon: "🔥", desc: "Conclua 200 dias no total", check: (d) => d.concluidos >= 200 },
+    { id: "questoes_100", nome: "Centurião de Questões", icon: "📝", desc: "Resolva 100 questões", check: (d) => d.totalQuestoes >= 100 },
+    { id: "questoes_500", nome: "Legião de Questões", icon: "⚔️", desc: "Resolva 500 questões", check: (d) => d.totalQuestoes >= 500 },
+    { id: "questoes_1000", nome: "Mestre das Questões", icon: "🎓", desc: "Resolva 1000 questões", check: (d) => d.totalQuestoes >= 1000 },
+    { id: "acerto_80", nome: "Precisão de Aço", icon: "🎯", desc: "Mantenha 80%+ de acerto global", check: (d) => d.totalQuestoes >= 30 && d.pctAcerto >= 80 },
+    { id: "acerto_90", nome: "Precisão Diamante", icon: "💎", desc: "Mantenha 90%+ de acerto global", check: (d) => d.totalQuestoes >= 50 && d.pctAcerto >= 90 },
+    { id: "todas_materias", nome: "Polímata", icon: "🌐", desc: "Estude todas as 10 matérias", check: (d) => d.materiasEstudadas >= 10 },
+    { id: "revisador", nome: "Revisador Fiel", icon: "🔄", desc: "Complete 10 dias de revisão", check: (d) => d.revisoes >= 10 }
+  ];
+
+  // Estado
   let currentDay = 1;
   let cronograma = [];
   let stats = {};
   let caderno = [];
+  let questoes = []; // registros de questões
+  let eixosConcluidos = {}; // {dia: {pdf: bool, questoes: bool, anki: bool, caderno: bool}}
+  let medalhasDesbloqueadas = [];
+  let initialTotalDays = 360;
 
-  // Inicialização
   function init() {
     loadData();
-    generateSchedule();
+    if (cronograma.length === 0) generateSchedule();
     renderAll();
     populateMateriasSelect();
+    populateFilterMaterias();
+    populateQuestoesMaterias();
   }
 
   function loadData() {
-    const savedStats = localStorage.getItem('tce_stats');
-    const savedCaderno = localStorage.getItem('tce_caderno');
-    const savedDay = localStorage.getItem('tce_day');
+    const s = localStorage.getItem('tce_stats');
+    const c = localStorage.getItem('tce_caderno');
+    const d = localStorage.getItem('tce_day');
+    const cr = localStorage.getItem('tce_cronograma');
+    const q = localStorage.getItem('tce_questoes');
+    const e = localStorage.getItem('tce_eixos');
+    const m = localStorage.getItem('tce_medalhas');
     
-    if (savedStats) stats = JSON.parse(savedStats);
-    if (savedCaderno) caderno = JSON.parse(savedCaderno);
-    if (savedDay) currentDay = parseInt(savedDay);
+    if (s) stats = JSON.parse(s);
+    if (c) caderno = JSON.parse(c);
+    if (d) currentDay = parseInt(d);
+    if (cr) cronograma = JSON.parse(cr);
+    if (q) questoes = JSON.parse(q);
+    if (e) eixosConcluidos = JSON.parse(e);
+    if (m) medalhasDesbloqueadas = JSON.parse(m);
   }
 
   function saveData() {
     localStorage.setItem('tce_stats', JSON.stringify(stats));
     localStorage.setItem('tce_caderno', JSON.stringify(caderno));
     localStorage.setItem('tce_day', currentDay);
+    localStorage.setItem('tce_cronograma', JSON.stringify(cronograma));
+    localStorage.setItem('tce_questoes', JSON.stringify(questoes));
+    localStorage.setItem('tce_eixos', JSON.stringify(eixosConcluidos));
+    localStorage.setItem('tce_medalhas', JSON.stringify(medalhasDesbloqueadas));
   }
 
   function generateSchedule() {
     cronograma = [];
-    // Ponteiros para cada matéria (qual tópico estamos)
     let pointers = {};
     Object.keys(materias).forEach(m => pointers[m] = 0);
 
-    for (let day = 1; day <= 360; day++) {
-      const cycleIndex = Math.floor((day - 1) / 6); // 0, 1, 2...
-      const dayInCycle = ((day - 1) % 6) + 1; // 1 a 6
+    for (let day = 1; day <= initialTotalDays; day++) {
+      const cycleIndex = Math.floor((day - 1) / 6);
+      const dayInCycle = ((day - 1) % 6) + 1;
       const isEvenCycle = cycleIndex % 2 === 0;
       const cycleMaterias = isEvenCycle ? ciclo1 : ciclo2;
       const cycleName = isEvenCycle ? "Ciclo 1" : "Ciclo 2";
 
       if (dayInCycle === 6) {
-        // Dia de Revisão
         cronograma.push({
           day: day,
           type: "Revisão",
           subject: `Revisão ${cycleName}`,
-          topic: `Revisão geral das matérias do ${cycleName} (Dias ${day-5} a ${day-1})`,
+          topic: `Revisão geral das matérias do ${cycleName}`,
           status: "Pendente"
         });
       } else {
-        // Dia de Matéria
         const subject = cycleMaterias[dayInCycle - 1];
         const topics = materias[subject];
         const p = pointers[subject];
-        
-        let topicText = "";
-        if (p < topics.length) {
-          topicText = topics[p];
-          pointers[subject]++;
-        } else {
-          topicText = "Revisão, Exercícios e Aprofundamento da Matéria";
-        }
+        let topicText = p < topics.length ? topics[p] : "Revisão, Exercícios e Aprofundamento";
+        if (p < topics.length) pointers[subject]++;
 
         cronograma.push({
           day: day,
@@ -477,51 +990,82 @@
     renderStats();
     renderCaderno();
     renderCronogramaTable();
+    renderHeatmap();
+    renderMedalhas();
+    renderQuestoes();
     updateProgress();
+    updateTotalInfo();
+    updateStreakBar();
+    checkMedalhas();
   }
 
+  // ===== AGENDA DO DIA =====
   function renderAgenda() {
+    if (currentDay > cronograma.length) currentDay = cronograma.length;
+    if (currentDay < 1) currentDay = 1;
+    
     const dayData = cronograma[currentDay - 1];
     const container = document.getElementById('dayContent');
+    const eixos = eixosConcluidos[currentDay] || { pdf: false, questoes: false, anki: false, caderno: false };
+    const totalEixos = Object.values(eixos).filter(v => v).length;
     
     let html = `
       <div class="day-card">
         <h3>Dia ${dayData.day} - ${dayData.type} | ${dayData.subject}</h3>
         <ul class="topic-list">
           <li class="${dayData.type === 'Revisão' ? 'review' : ''}">
-            <div>
-              <strong>Tópico:</strong> ${dayData.topic}
-            </div>
+            <div><strong>Tópico:</strong> ${dayData.topic}</div>
           </li>
         </ul>
+        
+        <div class="eixos-container">
+          <h4>📌 Eixos de Estudo do Dia (marque ao concluir)</h4>
+          <div class="eixos-grid">
+            <div class="eixo-item ${eixos.pdf ? 'checked' : ''}" onclick="toggleEixo('pdf')">
+              <input type="checkbox" id="eixoPdf" ${eixos.pdf ? 'checked' : ''} onclick="event.stopPropagation(); toggleEixo('pdf')">
+              <label for="eixoPdf">📖 PDF / Videoaula <span class="tempo">(1h30)</span></label>
+            </div>
+            <div class="eixo-item ${eixos.questoes ? 'checked' : ''}" onclick="toggleEixo('questoes')">
+              <input type="checkbox" id="eixoQuestoes" ${eixos.questoes ? 'checked' : ''} onclick="event.stopPropagation(); toggleEixo('questoes')">
+              <label for="eixoQuestoes">✍️ Questões <span class="tempo">(45min)</span></label>
+            </div>
+            <div class="eixo-item ${eixos.anki ? 'checked' : ''}" onclick="toggleEixo('anki')">
+              <input type="checkbox" id="eixoAnki" ${eixos.anki ? 'checked' : ''} onclick="event.stopPropagation(); toggleEixo('anki')">
+              <label for="eixoAnki">🧠 Anki (Revisão) <span class="tempo">(30min)</span></label>
+            </div>
+            <div class="eixo-item ${eixos.caderno ? 'checked' : ''}" onclick="toggleEixo('caderno')">
+              <input type="checkbox" id="eixoCaderno" ${eixos.caderno ? 'checked' : ''} onclick="event.stopPropagation(); toggleEixo('caderno')">
+              <label for="eixoCaderno">📓 Caderno de Erros <span class="tempo">(15min)</span></label>
+            </div>
+          </div>
+          <div class="eixo-progress">
+            Progresso do dia: ${totalEixos}/4 eixos concluídos
+            ${totalEixos === 4 ? ' 🎉 Dia completo!' : ''}
+          </div>
+        </div>
+        
         <div style="margin-top:15px; display:flex; gap:10px; flex-wrap:wrap;">
-          <button onclick="markStatus('Concluído')" style="padding:8px 16px; background:#28a745; color:white; border:none; border-radius:5px; cursor:pointer;">Marcar Concluído</button>
-          <button onclick="markStatus('Não encerrado')" style="padding:8px 16px; background:#ffc107; color:black; border:none; border-radius:5px; cursor:pointer;">Marcar Não encerrado</button>
-        </div>
-      </div>
-      <div class="stats-grid">
-        <div class="stat-card">
-          <h4>Eixo: Teoria (PDF/Videoaula)</h4>
-          <p>1h30</p>
-        </div>
-        <div class="stat-card">
-          <h4>Eixo: Questões</h4>
-          <p>45min</p>
-        </div>
-        <div class="stat-card">
-          <h4>Eixo: Anki (Revisão)</h4>
-          <p>30min</p>
-        </div>
-        <div class="stat-card">
-          <h4>Eixo: Caderno de Erros</h4>
-          <p>15min</p>
+          <button onclick="markStatus('Concluído')" style="padding:8px 16px; background:#28a745; color:white; border:none; border-radius:5px; cursor:pointer;">✅ Marcar Concluído</button>
+          <button onclick="markStatus('Não encerrado')" style="padding:8px 16px; background:#ffc107; color:black; border:none; border-radius:5px; cursor:pointer;">⏸️ Marcar Não encerrado</button>
+          <button onclick="markStatus('Pendente')" style="padding:8px 16px; background:#6c757d; color:white; border:none; border-radius:5px; cursor:pointer;">↩️ Voltar para Pendente</button>
         </div>
       </div>
     `;
     container.innerHTML = html;
     document.getElementById('dayInput').value = currentDay;
+    document.getElementById('totalDaysLabel').innerText = cronograma.length;
   }
 
+  function toggleEixo(eixo) {
+    if (!eixosConcluidos[currentDay]) {
+      eixosConcluidos[currentDay] = { pdf: false, questoes: false, anki: false, caderno: false };
+    }
+    eixosConcluidos[currentDay][eixo] = !eixosConcluidos[currentDay][eixo];
+    saveData();
+    renderAgenda();
+  }
+
+  // ===== ESTATÍSTICAS =====
   function renderStats() {
     const container = document.getElementById('statsTable');
     let html = `<table>
@@ -552,18 +1096,17 @@
         </td>
       </tr>`;
     });
-    
     html += `</tbody></table>`;
     container.innerHTML = html;
   }
 
+  // ===== CADERNO =====
   function renderCaderno() {
     const list = document.getElementById('cadernoList');
     if (caderno.length === 0) {
       list.innerHTML = '<p style="color:#666; text-align:center;">Nenhum registro ainda.</p>';
       return;
     }
-    
     let html = '';
     caderno.forEach((item, index) => {
       html += `
@@ -577,10 +1120,12 @@
     list.innerHTML = html;
   }
 
+  // ===== CRONOGRAMA =====
   function renderCronogramaTable() {
     const tbody = document.querySelector('#cronogramaTable tbody');
+    const filtered = getFilteredCronograma();
     let html = '';
-    cronograma.forEach(item => {
+    filtered.forEach(item => {
       html += `
         <tr>
           <td>${item.day}</td>
@@ -597,36 +1142,442 @@
         </tr>
       `;
     });
+    if (filtered.length === 0) {
+      html = '<tr><td colspan="5" style="text-align:center; color:#666;">Nenhum dia encontrado.</td></tr>';
+    }
     tbody.innerHTML = html;
   }
 
-  function updateProgress() {
-    const concluidos = cronograma.filter(d => d.status === 'Concluído').length;
-    const pct = Math.round((concluidos / 360) * 100);
-    const fill = document.getElementById('progressFill');
-    fill.style.width = pct + '%';
-    fill.innerText = `${concluidos} de 360 dias concluídos`;
+  function getFilteredCronograma() {
+    const fDia = document.getElementById('filterDia').value;
+    const fTipo = document.getElementById('filterTipo').value;
+    const fMateria = document.getElementById('filterMateria').value;
+    const fTopico = document.getElementById('filterTopico').value.toLowerCase().trim();
+    const fStatus = document.getElementById('filterStatus').value;
+    return cronograma.filter(item => {
+      if (fDia && item.day !== parseInt(fDia)) return false;
+      if (fTipo && item.type !== fTipo) return false;
+      if (fMateria && item.subject !== fMateria) return false;
+      if (fTopico && !item.topic.toLowerCase().includes(fTopico)) return false;
+      if (fStatus && item.status !== fStatus) return false;
+      return true;
+    });
   }
 
-  // --- INTERAÇÕES ---
-  function showTab(tabId) {
+  function applyFilters() { renderCronogramaTable(); }
+  function clearFilters() {
+    ['filterDia','filterTipo','filterMateria','filterTopico','filterStatus'].forEach(id => {
+      document.getElementById(id).value = '';
+    });
+    renderCronogramaTable();
+  }
+
+  // ===== HEATMAP =====
+  function renderHeatmap() {
+    const grid = document.getElementById('heatmapGrid');
+    grid.innerHTML = '';
+    
+    // Mostrar últimos 365 dias de estudo (excluindo domingos)
+    // Cada célula = 1 dia do cronograma, em ordem
+    const totalCells = Math.min(cronograma.length, 365);
+    
+    for (let i = 0; i < totalCells; i++) {
+      const day = cronograma[i];
+      const cell = document.createElement('div');
+      cell.className = 'heatmap-cell';
+      
+      let statusClass = 'pendente';
+      if (day.status === 'Concluído') statusClass = 'concluido';
+      else if (day.status === 'Não encerrado') statusClass = 'nao-encerrado';
+      
+      cell.classList.add(statusClass);
+      cell.setAttribute('data-tooltip', `Dia ${day.day}: ${day.subject} - ${day.status}`);
+      cell.onclick = () => { currentDay = day.day; showTab('agenda', null); renderAgenda(); };
+      
+      grid.appendChild(cell);
+    }
+    
+    // Atualizar resumo
+    const streakData = calcularOfensiva();
+    document.getElementById('heatStreakAtual').innerText = streakData.atual + ' 🔥';
+    document.getElementById('heatStreakRecorde').innerText = streakData.recorde + ' 🏆';
+    document.getElementById('heatTotalConcluidos').innerText = streakData.totalConcluidos;
+    const taxa = streakData.totalDiasPassados > 0 
+      ? Math.round((streakData.totalConcluidos / streakData.totalDiasPassados) * 100) 
+      : 0;
+    document.getElementById('heatTaxa').innerText = taxa + '%';
+  }
+
+  // ===== MEDALHAS =====
+  function renderMedalhas() {
+    const grid = document.getElementById('medalsGrid');
+    const dados = calcularDadosMedalhas();
+    let html = '';
+    
+    MEDALHAS_DEF.forEach(medalha => {
+      const unlocked = medalhasDesbloqueadas.includes(medalha.id);
+      const conditionMet = medalha.check(dados);
+      
+      html += `
+        <div class="medal ${unlocked ? 'unlocked' : 'locked'} ${conditionMet && !unlocked ? 'new-unlock' : ''}">
+          <div class="medal-icon">${medalha.icon}</div>
+          <div class="medal-name">${medalha.nome}</div>
+          <div class="medal-desc">${medalha.desc}</div>
+        </div>
+      `;
+    });
+    
+    grid.innerHTML = html;
+  }
+
+  function calcularDadosMedalhas() {
+    const concluidos = cronograma.filter(d => d.status === 'Concluído').length;
+    const streakData = calcularOfensiva();
+    const ciclosCompletos = calcularCiclosCompletos();
+    const totalQuestoes = questoes.reduce((sum, q) => sum + q.feitas, 0);
+    const totalAcertos = questoes.reduce((sum, q) => sum + q.acertos, 0);
+    const pctAcerto = totalQuestoes > 0 ? Math.round((totalAcertos / totalQuestoes) * 100) : 0;
+    const materiasEstudadas = new Set(cronograma.filter(d => d.status === 'Concluído' && !d.subject.startsWith('Revisão')).map(d => d.subject)).size;
+    const revisoes = cronograma.filter(d => d.status === 'Concluído' && d.type === 'Revisão').length;
+    
+    return {
+      concluidos,
+      streakAtual: streakData.atual,
+      streakRecorde: streakData.recorde,
+      ciclosCompletos,
+      totalQuestoes,
+      pctAcerto,
+      materiasEstudadas,
+      revisoes
+    };
+  }
+
+  function calcularCiclosCompletos() {
+    // Um ciclo completo = 6 dias consecutivos todos concluídos
+    let ciclos = 0;
+    for (let i = 0; i + 5 < cronograma.length; i += 6) {
+      const todosConcluidos = cronograma.slice(i, i + 6).every(d => d.status === 'Concluído');
+      if (todosConcluidos) ciclos++;
+    }
+    return ciclos;
+  }
+
+  function calcularOfensiva() {
+    // Ofensiva = dias consecutivos concluídos até o último dia concluído
+    // Percorrer do mais recente para o mais antigo
+    let atual = 0;
+    let recorde = 0;
+    let streakAtualCalc = 0;
+    let totalConcluidos = 0;
+    let ultimoIndiceConcluido = -1;
+    
+    // Encontrar último dia concluído
+    for (let i = cronograma.length - 1; i >= 0; i--) {
+      if (cronograma[i].status === 'Concluído') {
+        ultimoIndiceConcluido = i;
+        break;
+      }
+    }
+    
+    // Calcular ofensiva atual (a partir do último concluído, retroceder)
+    if (ultimoIndiceConcluido >= 0) {
+      for (let i = ultimoIndiceConcluido; i >= 0; i--) {
+        if (cronograma[i].status === 'Concluído') atual++;
+        else break;
+      }
+    }
+    
+    // Calcular recorde (maior sequência consecutiva)
+    let streakAtual = 0;
+    for (let i = 0; i < cronograma.length; i++) {
+      if (cronograma[i].status === 'Concluído') {
+        streakAtual++;
+        if (streakAtual > recorde) recorde = streakAtual;
+      } else {
+        streakAtual = 0;
+      }
+    }
+    
+    totalConcluidos = cronograma.filter(d => d.status === 'Concluído').length;
+    const totalDiasPassados = cronograma.filter(d => d.status !== 'Pendente' || d.day <= (ultimoIndiceConcluido + 1)).length;
+    
+    return { atual, recorde, totalConcluidos, totalDiasPassados };
+  }
+
+  function checkMedalhas() {
+    const dados = calcularDadosMedalhas();
+    let novasDesbloqueadas = false;
+    
+    MEDALHAS_DEF.forEach(medalha => {
+      if (!medalhasDesbloqueadas.includes(medalha.id) && medalha.check(dados)) {
+        medalhasDesbloqueadas.push(medalha.id);
+        novasDesbloqueadas = true;
+      }
+    });
+    
+    if (novasDesbloqueadas) {
+      saveData();
+      // Mostrar notificação da última medalha desbloqueada
+      const ultima = MEDALHAS_DEF.find(m => m.id === medalhasDesbloqueadas[medalhasDesbloqueadas.length - 1]);
+      if (ultima) {
+        setTimeout(() => {
+          alert(`🏅 Nova medalha desbloqueada!\n\n${ultima.icon} ${ultima.nome}\n${ultima.desc}`);
+        }, 300);
+      }
+    }
+    
+    // Atualizar contadores na barra de ofensiva
+    const streakData = calcularOfensiva();
+    document.getElementById('streakAtual').innerText = streakData.atual + ' 🔥';
+    document.getElementById('streakRecorde').innerText = streakData.recorde + ' 🏆';
+    document.getElementById('ciclosCompletos').innerText = calcularCiclosCompletos() + ' 🔄';
+    document.getElementById('medalhasCount').innerText = medalhasDesbloqueadas.length + ' 🏅';
+  }
+
+  function updateStreakBar() {
+    checkMedalhas();
+  }
+
+  // ===== QUESTÕES POR ASSUNTO =====
+  function populateQuestoesMaterias() {
+    const select = document.getElementById('qMateria');
+    select.innerHTML = '<option value="">Selecione</option>';
+    Object.keys(materias).forEach(m => {
+      const opt = document.createElement('option');
+      opt.value = m;
+      opt.innerText = m;
+      select.appendChild(opt);
+    });
+  }
+
+  function updateAssuntosSelect() {
+    const materia = document.getElementById('qMateria').value;
+    const select = document.getElementById('qAssunto');
+    select.innerHTML = '';
+    
+    if (!materia) {
+      select.innerHTML = '<option value="">Selecione a matéria primeiro</option>';
+      return;
+    }
+    
+    // Adicionar todos os tópicos da matéria + opção personalizada
+    const optDefault = document.createElement('option');
+    optDefault.value = '';
+    optDefault.innerText = 'Selecione um assunto';
+    select.appendChild(optDefault);
+    
+    materias[materia].forEach(t => {
+      const opt = document.createElement('option');
+      opt.value = t;
+      opt.innerText = t;
+      select.appendChild(opt);
+    });
+    
+    const optCustom = document.createElement('option');
+    optCustom.value = '__custom__';
+    optCustom.innerText = '✏️ Digitar assunto personalizado...';
+    select.appendChild(optCustom);
+    
+    select.onchange = function() {
+      if (this.value === '__custom__') {
+        const custom = prompt('Digite o nome do assunto:');
+        if (custom) {
+          const opt = document.createElement('option');
+          opt.value = custom;
+          opt.innerText = custom;
+          opt.selected = true;
+          select.insertBefore(opt, select.lastChild);
+        }
+      }
+    };
+  }
+
+  function addQuestao() {
+    const materia = document.getElementById('qMateria').value;
+    const assunto = document.getElementById('qAssunto').value;
+    const dia = parseInt(document.getElementById('qDia').value);
+    const feitas = parseInt(document.getElementById('qFeitas').value);
+    const acertos = parseInt(document.getElementById('qAcertos').value);
+    const erros = parseInt(document.getElementById('qErros').value);
+    
+    if (!materia || !assunto || !dia || isNaN(feitas) || isNaN(acertos) || isNaN(erros)) {
+      alert('Preencha todos os campos corretamente.');
+      return;
+    }
+    if (acertos + erros !== feitas) {
+      if (!confirm(`Atenção: Acertos (${acertos}) + Erros (${erros}) = ${acertos+erros}, diferente de Questões feitas (${feitas}). Deseja continuar?`)) {
+        return;
+      }
+    }
+    
+    questoes.push({
+      id: Date.now(),
+      materia, assunto, dia, feitas, acertos, erros,
+      data: new Date().toISOString().split('T')[0]
+    });
+    
+    saveData();
+    renderQuestoes();
+    
+    // Limpar campos
+    ['qDia','qFeitas','qAcertos','qErros'].forEach(id => document.getElementById(id).value = '');
+  }
+
+  function renderQuestoes() {
+    const list = document.getElementById('questoesList');
+    const summary = document.getElementById('questoesSummary');
+    
+    // Resumo geral
+    const totalFeitas = questoes.reduce((s, q) => s + q.feitas, 0);
+    const totalAcertos = questoes.reduce((s, q) => s + q.acertos, 0);
+    const totalErros = questoes.reduce((s, q) => s + q.erros, 0);
+    const pctGeral = totalFeitas > 0 ? Math.round((totalAcertos / totalFeitas) * 100) : 0;
+    
+    summary.innerHTML = `
+      <div class="questoes-summary-card">
+        <h5>Total de Questões</h5>
+        <div class="value">${totalFeitas}</div>
+      </div>
+      <div class="questoes-summary-card acerto">
+        <h5>Acertos</h5>
+        <div class="value">${totalAcertos}</div>
+      </div>
+      <div class="questoes-summary-card erro">
+        <h5>Erros</h5>
+        <div class="value">${totalErros}</div>
+      </div>
+      <div class="questoes-summary-card">
+        <h5>% Acerto Global</h5>
+        <div class="value" style="color:${pctGeral >= 80 ? '#28a745' : pctGeral >= 60 ? '#ffc107' : '#dc3545'}">${pctGeral}%</div>
+      </div>
+    `;
+    
+    if (questoes.length === 0) {
+      list.innerHTML = '<p style="color:#666; text-align:center; padding:20px;">Nenhum registro de questões ainda.</p>';
+      return;
+    }
+    
+    // Agrupar por matéria -> assunto
+    const agrupado = {};
+    questoes.forEach(q => {
+      if (!agrupado[q.materia]) agrupado[q.materia] = {};
+      if (!agrupado[q.materia][q.assunto]) agrupado[q.materia][q.assunto] = [];
+      agrupado[q.materia][q.assunto].push(q);
+    });
+    
+    let html = '';
+    Object.keys(agrupado).sort().forEach(materia => {
+      html += `<div style="margin-top:20px;">
+        <h4 style="color:#003366; margin-bottom:10px;">${materia}</h4>`;
+      
+      Object.keys(agrupado[materia]).sort().forEach(assunto => {
+        const regs = agrupado[materia][assunto];
+        const totFeitas = regs.reduce((s, r) => s + r.feitas, 0);
+        const totAcertos = regs.reduce((s, r) => s + r.acertos, 0);
+        const pct = totFeitas > 0 ? Math.round((totAcertos / totFeitas) * 100) : 0;
+        
+        html += `
+          <details style="background:#f8f9fa; padding:10px; border-radius:5px; margin-bottom:8px; border-left:4px solid #0055a5;">
+            <summary style="cursor:pointer; font-weight:600; color:#003366;">
+              ${assunto} 
+              <span style="float:right; color:#666; font-size:0.85em;">
+                ${totFeitas} questões | ${pct}% acerto | ${regs.length} registro(s)
+              </span>
+            </summary>
+            <table style="margin-top:10px;">
+              <thead>
+                <tr>
+                  <th>Dia</th>
+                  <th>Data</th>
+                  <th>Feitas</th>
+                  <th>Acertos</th>
+                  <th>Erros</th>
+                  <th>% Acerto</th>
+                  <th>Ação</th>
+                </tr>
+              </thead>
+              <tbody>`;
+        
+        regs.sort((a, b) => a.dia - b.dia).forEach(r => {
+          const p = r.feitas > 0 ? Math.round((r.acertos / r.feitas) * 100) : 0;
+          html += `
+            <tr>
+              <td>Dia ${r.dia}</td>
+              <td>${r.data}</td>
+              <td>${r.feitas}</td>
+              <td style="color:#28a745;">${r.acertos}</td>
+              <td style="color:#dc3545;">${r.erros}</td>
+              <td><strong style="color:${p >= 80 ? '#28a745' : p >= 60 ? '#ffc107' : '#dc3545'}">${p}%</strong></td>
+              <td><button onclick="deleteQuestao(${r.id})" style="background:#dc3545; color:white; border:none; padding:3px 8px; border-radius:3px; cursor:pointer; font-size:0.8em;">🗑️</button></td>
+            </tr>
+          `;
+        });
+        
+        html += `</tbody></table></details>`;
+      });
+      
+      html += `</div>`;
+    });
+    
+    list.innerHTML = html;
+  }
+
+  function deleteQuestao(id) {
+    if (!confirm('Excluir este registro?')) return;
+    questoes = questoes.filter(q => q.id !== id);
+    saveData();
+    renderQuestoes();
+    checkMedalhas();
+  }
+
+  // ===== PROGRESSO E STATUS =====
+  function updateProgress() {
+    const total = cronograma.length;
+    const concluidos = cronograma.filter(d => d.status === 'Concluído').length;
+    const pct = total > 0 ? Math.round((concluidos / total) * 100) : 0;
+    const fill = document.getElementById('progressFill');
+    fill.style.width = pct + '%';
+    fill.innerText = `${concluidos} de ${total} dias concluídos (${pct}%)`;
+  }
+
+  function updateTotalInfo() {
+    const info = document.getElementById('totalInfo');
+    const total = cronograma.length;
+    const extras = total - initialTotalDays;
+    if (extras > 0) {
+      info.innerHTML = `Total de dias: <strong>${total}</strong> (base: ${initialTotalDays} + ${extras} dias extras por conteúdo não encerrado)`;
+    } else {
+      info.innerHTML = `Total de dias: <strong>${total}</strong>`;
+    }
+  }
+
+  function showTab(tabId, evt) {
     document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
     document.getElementById(tabId).classList.add('active');
-    event.target.classList.add('active');
+    if (evt && evt.target) evt.target.classList.add('active');
+    else {
+      // Ativar a tab correspondente quando chamado do heatmap
+      const tabs = document.querySelectorAll('.tab');
+      tabs.forEach(t => {
+        if (t.getAttribute('onclick') && t.getAttribute('onclick').includes(`'${tabId}'`)) {
+          t.classList.add('active');
+        }
+      });
+    }
   }
 
   function changeDay(delta) {
     currentDay += delta;
     if (currentDay < 1) currentDay = 1;
-    if (currentDay > 360) currentDay = 360;
+    if (currentDay > cronograma.length) currentDay = cronograma.length;
     renderAgenda();
     saveData();
   }
 
   function goToDay() {
     const val = parseInt(document.getElementById('dayInput').value);
-    if (val >= 1 && val <= 360) {
+    if (val >= 1 && val <= cronograma.length) {
       currentDay = val;
       renderAgenda();
       saveData();
@@ -637,15 +1588,7 @@
     alert(`Dia ${currentDay} marcado como dia de hoje.`);
   }
 
-  function markStatus(status) {
-    const dayData = cronograma[currentDay - 1];
-    dayData.status = status;
-    
-    // Atualizar stats
-    const subj = dayData.subject;
-    if (!stats[subj]) stats[subj] = { concluidos: 0, nao_encerrados: 0 };
-    
-    // Resetar contadores para recalcular
+  function recalcStats() {
     Object.keys(stats).forEach(k => { stats[k].concluidos = 0; stats[k].nao_encerrados = 0; });
     cronograma.forEach(d => {
       const s = d.subject;
@@ -653,26 +1596,58 @@
       if (d.status === 'Concluído') stats[s].concluidos++;
       else if (d.status === 'Não encerrado') stats[s].nao_encerrados++;
     });
+  }
 
+  function markStatus(status) {
+    const dayData = cronograma[currentDay - 1];
+    const previousStatus = dayData.status;
+    dayData.status = status;
+    
+    if (status === 'Não encerrado' && previousStatus !== 'Não encerrado') {
+      const newDay = {
+        day: 0,
+        type: dayData.type,
+        subject: dayData.subject,
+        topic: dayData.topic,
+        status: "Pendente"
+      };
+      cronograma.splice(currentDay, 0, newDay);
+      for (let i = currentDay; i < cronograma.length; i++) {
+        cronograma[i].day = i + 1;
+      }
+    }
+    
+    recalcStats();
     saveData();
     renderAll();
   }
 
   function updateStatus(day, status) {
-    cronograma[day - 1].status = status;
+    const idx = cronograma.findIndex(d => d.day === day);
+    if (idx === -1) return;
     
-    // Recalcular stats
-    Object.keys(stats).forEach(k => { stats[k].concluidos = 0; stats[k].nao_encerrados = 0; });
-    cronograma.forEach(d => {
-      const s = d.subject;
-      if (!stats[s]) stats[s] = { concluidos: 0, nao_encerrados: 0 };
-      if (d.status === 'Concluído') stats[s].concluidos++;
-      else if (d.status === 'Não encerrado') stats[s].nao_encerrados++;
-    });
-
+    const dayData = cronograma[idx];
+    const previousStatus = dayData.status;
+    dayData.status = status;
+    
+    if (status === 'Não encerrado' && previousStatus !== 'Não encerrado') {
+      const newDay = {
+        day: 0,
+        type: dayData.type,
+        subject: dayData.subject,
+        topic: dayData.topic,
+        status: "Pendente"
+      };
+      cronograma.splice(idx + 1, 0, newDay);
+      for (let i = idx + 1; i < cronograma.length; i++) {
+        cronograma[i].day = i + 1;
+      }
+      if (currentDay > idx + 1) currentDay++;
+    }
+    
+    recalcStats();
     saveData();
-    updateProgress();
-    renderStats();
+    renderAll();
   }
 
   function populateMateriasSelect() {
@@ -685,20 +1660,24 @@
     });
   }
 
+  function populateFilterMaterias() {
+    const select = document.getElementById('filterMateria');
+    Object.keys(materias).forEach(m => {
+      const opt = document.createElement('option');
+      opt.value = m;
+      opt.innerText = m;
+      select.appendChild(opt);
+    });
+  }
+
   function addCaderno() {
     const m = document.getElementById('cadernoMateria').value;
     const t = document.getElementById('cadernoTopico').value;
     const e = document.getElementById('cadernoExp').value;
-    
-    if (!m || !t || !e) {
-      alert('Preencha todos os campos.');
-      return;
-    }
-    
+    if (!m || !t || !e) { alert('Preencha todos os campos.'); return; }
     caderno.push({ materia: m, topico: t, exp: e });
     saveData();
     renderCaderno();
-    
     document.getElementById('cadernoTopico').value = '';
     document.getElementById('cadernoExp').value = '';
   }
@@ -710,15 +1689,20 @@
   }
 
   function resetStats() {
-    if (confirm('Tem certeza que deseja resetar todas as estatísticas?')) {
+    if (confirm('Tem certeza que deseja resetar TUDO? Isso apagará todo o progresso, questões, medalhas e caderno.')) {
       stats = {};
-      cronograma.forEach(d => d.status = 'Pendente');
+      cronograma = [];
+      currentDay = 1;
+      caderno = [];
+      questoes = [];
+      eixosConcluidos = {};
+      medalhasDesbloqueadas = [];
+      generateSchedule();
       saveData();
       renderAll();
     }
   }
 
-  // Iniciar
   init();
 </script>
 </body>
